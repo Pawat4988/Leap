@@ -3,6 +3,7 @@ from dwave.system import LeapHybridBQMSampler
 import dwave.inspector
 from collections import defaultdict
 import networkx as nx
+from dimod.binary import BinaryQuadraticModel
 
 G = nx.Graph()
 # Add edges to the graph (also adds nodes)
@@ -17,6 +18,8 @@ for i, j in G.edges:
     Q[(j,j)]+= -1
     Q[(i,j)]+= 2
 print(Q)
+print(BinaryQuadraticModel.from_qubo(Q))
+
 sampler = LeapHybridBQMSampler()
 response = sampler.sample_qubo(Q)
 print(response.first)
