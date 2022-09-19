@@ -6,9 +6,10 @@ import networkx as nx
 from dimod.binary import BinaryQuadraticModel
 from dimod import ConstrainedQuadraticModel, Integer
 import dimod
-
-# set = [25, 7,13, 31, 42,17, 21,10]
-set = [3,1,1,2,2,1]
+import numpy
+from hybrid.utils import sample_as_dict
+set = [25, 7,13, 31, 42,17, 21,10]
+# set = [3,1,1,2,2,1]
 
 c = 0
 for i in set:
@@ -29,46 +30,49 @@ for i in range(len(set)):
 # bqm
 # sampler = LeapHybridBQMSampler()
 # response = sampler.sample_qubo(Q)
-# print(response.first)
 # for sample, energy in response.data(fields=['sample','energy']):
 #     print(sample,energy)
 
+# for sample, energy in response.data(fields=['sample','energy']):
+#     set0Total = 0
+#     set1Total = 0
+#     for key, value in sample.items():
+#         amount = set[key]
+#         if value == 0:
+#             set0Total += amount
+#         elif value == 1:
+#             set1Total += amount
+#     if set0Total == set1Total:
+#         print(sample,f"set0 total: {set0Total}",f"set1 total: {set1Total}","Valid")
+#     else:
+#         print(sample,f"set0 total: {set0Total}",f"set1 total: {set1Total}","Invalid")
+
 # cqm
-# cqm = ConstrainedQuadraticModel.from_bqm(BinaryQuadraticModel.from_qubo(Q))
-# sampler = LeapHybridCQMSampler()                
+cqm = ConstrainedQuadraticModel.from_bqm(BinaryQuadraticModel.from_qubo(Q))
+sampler = LeapHybridCQMSampler()                
 
-# sampleset = sampler.sample_cqm(cqm)             
+sampleset = sampler.sample_cqm(cqm)             
 # answers = []
-# for sample in sampleset.data(fields=['sample']):
-#     if sample not in answers:
-#         answers.append(sample)
+validNum = 0
+invalidNum = 0  
+for sample in sampleset.samples():
+    # if sample not in answers:
+    #     answers.append(sample)
+    sample = sample_as_dict(sample)
+    set0Total = 0
+    set1Total = 0
+    for key, value in sample.items():
+        amount = set[key]
+        if value == 0:
+            set0Total += amount
+        elif value == 1:
+            set1Total += amount
+    if set0Total == set1Total:
+        print(sample,f"set0 total: {set0Total}",f"set1 total: {set1Total}","Valid")
+        validNum+=1
+    else:
+        print(sample,f"set0 total: {set0Total}",f"set1 total: {set1Total}","Invalid")
+        invalidNum+=1
+print(f"Valid: {validNum}, Invalid: {invalidNum}, percentage: {(validNum/(invalidNum+validNum))*100}%")
+
 # print(answers)
-
-# dqm
-
-
-cases = [0, 1]
-
-dqm = dimod.DiscreteQuadraticModel()
-dqm.add_variable(2, label='item0')
-dqm.add_variable(2, label='item1')
-dqm.add_variable(2, label='item2')
-dqm.add_variable(2, label='item3')
-dqm.add_variable(2, label='item4')
-dqm.add_variable(2, label='item5')
-
-variables = [f'item{i}' for i in range(6)]
-
-for i in range(len(set)):
-    for j in range(len(set)):
-        dqm.set_quadratic(variables[i],variables[i],{(i, i): set[i]*(set[i]-c)})
-        dqm.set_quadratic(variables[i],variables[j],{(i, j): set[i]*set[j]})
-
-dqm_sampler = LeapHybridDQMSampler()
-sampleset = dqm_sampler.sample_dqm(dqm)
-            
-answers = []
-for sample in sampleset.data(fields=['sample']):
-    if sample not in answers:
-        answers.append(sample)
-print(answers)
