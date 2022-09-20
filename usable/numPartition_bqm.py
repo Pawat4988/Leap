@@ -35,7 +35,7 @@ for _ in range(15):
     response = sampler.sample_qubo(Q)
     endTime = time.time()
     timeTook = startTime-endTime
-    
+
     bestAnswer = 10000
     for sample, energy in response.data(fields=['sample','energy']):
         set0Total = 0
@@ -55,3 +55,5 @@ for _ in range(15):
         if diff < bestAnswer:
             bestAnswer = diff
     collect.addData(timeTook,bestAnswer)
+
+collect.saveData("bqmData")

@@ -8,6 +8,8 @@ import dimod
 import numpy
 from hybrid.utils import sample_as_dict
 import time
+from collect import Collect
+collect = Collect()
 
 set = [25, 7,13, 31, 42,17, 21,10]
 # set = [3,1,1,2,2,1]
@@ -16,8 +18,6 @@ c = 0
 for i in set:
     c += i
 
-# ------- Set up our QUBO dictionary -------
-# Initialize our Q matrix
 Q = defaultdict(int)
 
 for i in range(len(set)):
@@ -34,12 +34,11 @@ for _ in range(15):
     sampleset = sampler.sample_cqm(cqm)      
     endTime = time.time()
     timeTook = startTime-endTime
-    # answers = []
+
     validNum = 0
     invalidNum = 0  
+    bestAnswer = 10000
     for sample in sampleset.samples():
-        # if sample not in answers:
-        #     answers.append(sample)
         sample = sample_as_dict(sample)
         set0Total = 0
         set1Total = 0
@@ -55,4 +54,11 @@ for _ in range(15):
         else:
             print(sample,f"set0 total: {set0Total}",f"set1 total: {set1Total}","Invalid")
             invalidNum+=1
+        # get best ansewr
+        diff = abs(set0Total - set1Total)
+        if diff < bestAnswer:
+            bestAnswer = diff
     print(f"Valid: {validNum}, Invalid: {invalidNum}, percentage: {(validNum/(invalidNum+validNum))*100}%")
+    collect.addData(timeTook,bestAnswer)
+
+collect.saveData("cqmData")

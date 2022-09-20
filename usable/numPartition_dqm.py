@@ -69,5 +69,6 @@ for _ in range(15):
             bestAnswer = diff
     print(f"Valid: {validNum}, Invalid: {invalidNum}, percentage: {(validNum/(invalidNum+validNum))*100}%")
     collect.addData(timeTook,bestAnswer)
-    
+
+collect.saveData("dqmData")
     
