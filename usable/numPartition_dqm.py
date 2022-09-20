@@ -42,7 +42,7 @@ for _ in range(15):
     startTime = time.time()
     sampleset = dqm_sampler.sample_dqm(dqm)
     endTime = time.time()
-    timeTook = startTime-endTime
+    timeTook = endTime-startTime
 
     validNum = 0
     invalidNum = 0

@@ -30,11 +30,11 @@ sampler = LeapHybridBQMSampler()
 
 
 # calculate here
-for _ in range(15):
+for _ in range(5):
     startTime = time.time()
     response = sampler.sample_qubo(Q)
     endTime = time.time()
-    timeTook = startTime-endTime
+    timeTook = endTime-startTime
 
     bestAnswer = 10000
     for sample, energy in response.data(fields=['sample','energy']):

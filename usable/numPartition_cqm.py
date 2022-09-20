@@ -33,7 +33,7 @@ for _ in range(15):
     startTime = time.time()
     sampleset = sampler.sample_cqm(cqm)      
     endTime = time.time()
-    timeTook = startTime-endTime
+    timeTook = endTime-startTime
 
     validNum = 0
     invalidNum = 0  
