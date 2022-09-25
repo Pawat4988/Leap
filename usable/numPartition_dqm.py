@@ -15,6 +15,10 @@ collect = Collect()
 # set = [1,1,1,2,2,3]
 set = [25, 7,13, 31, 42,17, 21,10]
 # set = [2,8,10,3,4,5,7,8,9,12,23]
+c = 0
+for i in set:
+    c += i
+
 cases = [0,1]
 variables = []
 for index, item in enumerate(set):
@@ -33,12 +37,12 @@ for combination, combinationIndex in zip(possibleCombination,indices):
     uIndex,vIndex = combinationIndex
     # print(f"Combination of item {uIndex} and {vIndex} with value {u} and {v}")
     sum = u+v
-    dqm.set_quadratic(variables[uIndex], variables[vIndex], {(0, 0): sum,(0,1): 0, (1,0): 0, (1,1): sum})
+    dqm.set_quadratic(variables[uIndex], variables[vIndex], {(0, 0): sum,(0,1): abs(u-v), (1,0): abs(u-v), (1,1): sum})
 
 dqm_sampler = LeapHybridDQMSampler()
 
 # calculate here
-for _ in range(15):
+for _ in range(1):
     startTime = time.time()
     sampleset = dqm_sampler.sample_dqm(dqm)
     endTime = time.time()
@@ -57,6 +61,7 @@ for _ in range(15):
                 set0Total += amount
             elif value == 1:
                 set1Total += amount
+        print(energy)
         if set0Total == set1Total:
             print(sample,f"set0 total: {set0Total}",f"set1 total: {set1Total}","Valid")
             validNum+=1
