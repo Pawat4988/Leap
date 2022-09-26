@@ -31,7 +31,7 @@ sets = [[25, 7, 13, 31, 42, 17, 21, 10],
 sampler = LeapHybridBQMSampler()
 
 # ----Loop here----
-for set in sets:
+for problemNo, set in enumerate(sets):
     c = 0
     for i in set:
         c += i
@@ -44,10 +44,8 @@ for set in sets:
             Q[(i,j)] = set[i]*set[j]
 
     # calculate here
-    startTime = time.time()
     response = sampler.sample_qubo(Q)
-    endTime = time.time()
-    timeTook = endTime-startTime
+    timimgInfo = response.info
 
     bestAnswer = 10000
     for sample, energy in response.data(fields=['sample','energy']):
@@ -67,6 +65,7 @@ for set in sets:
         diff = abs(set0Total - set1Total)
         if diff < bestAnswer:
             bestAnswer = diff
-    collect.addData(timeTook,bestAnswer)
+
+        collect.addData(problemNo,sample,)
 
 collect.saveData("bqmData")
