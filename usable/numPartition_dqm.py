@@ -75,5 +75,5 @@ for _ in range(1):
     print(f"Valid: {validNum}, Invalid: {invalidNum}, percentage: {(validNum/(invalidNum+validNum))*100}%")
     collect.addData(timeTook,bestAnswer)
 
-collect.saveData("dqmData")
+collect.saveData("numPartitionDQM")
     

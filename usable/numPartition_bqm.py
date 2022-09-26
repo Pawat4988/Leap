@@ -45,7 +45,11 @@ for problemNo, set in enumerate(sets):
 
     # calculate here
     response = sampler.sample_qubo(Q)
+
     timimgInfo = response.info
+    qpu_access_time = timimgInfo["qpu_access_time"]
+    run_time = timimgInfo["run_time"]
+
 
     bestAnswer = 10000
     for sample, energy in response.data(fields=['sample','energy']):
@@ -66,6 +70,6 @@ for problemNo, set in enumerate(sets):
         if diff < bestAnswer:
             bestAnswer = diff
 
-        collect.addData(problemNo,sample,)
+        collect.addData(problemNo,sample,qpu_access_time,run_time)
 
-collect.saveData("bqmData")
+collect.saveData("numPartitionBQM")

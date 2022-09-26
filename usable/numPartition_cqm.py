@@ -31,7 +31,7 @@ sets = [[25, 7, 13, 31, 42, 17, 21, 10],
 # set = [25, 7,13, 31, 42,17, 21,10]
 # set = [3,1,1,2,2,1]
 sampler = LeapHybridCQMSampler()                
-for set in sets:
+for problemNo,set in enumerate(sets):
 
     c = 0
     for i in set:
@@ -45,19 +45,14 @@ for set in sets:
             Q[(i,j)] = set[i]*set[j]
 
     cqm = ConstrainedQuadraticModel.from_bqm(BinaryQuadraticModel.from_qubo(Q))
-    # print(cqm)
-    # print(cqm.constraints)
-    # print(cqm.objective)
-    # print(cqm.variables)
 
     # calculate here
-    startTime = time.time()
-    print("Start")
-    sampleset = sampler.sample_cqm(cqm)      
-    endTime = time.time()
-    print("End")
-    timeTook = endTime-startTime
-    print(f"Took: {timeTook} sec")
+    sampleset = sampler.sample_cqm(cqm)
+
+    timimgInfo = sampleset.info
+    qpu_access_time = timimgInfo["qpu_access_time"]
+    run_time = timimgInfo["run_time"]
+    
 
     validNum = 0
     invalidNum = 0  
@@ -82,7 +77,8 @@ for set in sets:
         diff = abs(set0Total - set1Total)
         if diff < bestAnswer:
             bestAnswer = diff
-    print(f"Valid: {validNum}, Invalid: {invalidNum}, percentage: {(validNum/(invalidNum+validNum))*100}%")
-    collect.addData(timeTook,bestAnswer)
 
-collect.saveData("cqmData")
+        collect.addData(problemNo,sample,qpu_access_time,run_time)
+    print(f"Valid: {validNum}, Invalid: {invalidNum}, percentage: {(validNum/(invalidNum+validNum))*100}%")
+
+collect.saveData("numPartitionCQM")
