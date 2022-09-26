@@ -5,33 +5,42 @@ from dimod.binary import BinaryQuadraticModel
 import dimod
 import json
 
+
 i = Integer('i', upper_bound=100)
 j = Integer('j', upper_bound=100)
 
 cqm = ConstrainedQuadraticModel()
 cqm.set_objective(-i*j)
+# cqm.set_objective(-i)
 
 cqm.add_constraint(2*i+2*j <= 32, "Max perimeter")
+# cqm.add_constraint(i <= 0, "Max perimeter")
 
-# sampler = LeapHybridCQMSampler()
-sampler2 = LeapHybridSampler()
+sampler = LeapHybridCQMSampler()
+# sampler2 = LeapHybridSampler()
 
 bqm, invert = cqm_to_bqm(cqm)
+print(sampler.min_time_limit(cqm))
+
+
 Q = BinaryQuadraticModel.to_qubo(bqm)
 # print(bqm)
 
-# response = sampler.sample_cqm(cqm)
-response2 = sampler2.sample(bqm)
+response = sampler.sample_cqm(cqm)
+# response2 = sampler2.sample(bqm)
 
-newinvert = dimod.constrained.CQMToBQMInverter.from_dict(
-    json.loads(json.dumps(invert.to_dict())))
+print(response.info)
 
-for sample, energy in response2.data(fields=['sample','energy']):
-    print(sample,energy)
+
+# newinvert = dimod.constrained.CQMToBQMInverter.from_dict(
+#     json.loads(json.dumps(invert.to_dict())))
+
+# for sample, energy in response2.data(fields=['sample','energy']):
+#     print(sample,energy)
 
 # for sample, energy in response2.data(fields=['sample','energy']):
 #     print(newinvert(sample),energy)  
 
 # invert(response2.first.sample)   
 
-print(newinvert(response2.first.sample))
+# print(newinvert(response2.first.sample))
