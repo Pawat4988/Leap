@@ -57,40 +57,45 @@ for problemNo,set in enumerate(sets):
     validNum = 0
     invalidNum = 0  
     bestAnswer = 10000
-    # for sample ,energy in sampleset.data(fields=['sample','energy']):
-    # sample,energy = sampleset.first(fields=["sample","energy"])
-    # print(sample)
-    # print(energy)
+    sampleNo = 0
+    for sample ,energy in sampleset.data(fields=['sample','energy']):
 
-    sample = sampleset.first.sample
-    print(sample)
-    energy = sampleset.first.energy
-    print(energy)
+        # sample = sampleset.first.sample
+        # print(sample)
+        # energy = sampleset.first.energy
+        # print(energy)
 
-    sample = sample_as_dict(sample)
-    set0Total = 0
-    set1Total = 0
-    for key, value in sample.items():
-        amount = set[key]
-        if value == 0:
-            set0Total += amount
-        elif value == 1:
-            set1Total += amount
-    if set0Total == set1Total:
-        # print(sample,f"set0 total: {set0Total}",f"set1 total: {set1Total}","Valid","Energy: ",energy)
-        print(sample,f"set0 total: {set0Total}",f"set1 total: {set1Total}","Valid")
-        validNum+=1
-    else:
-        # print(sample,f"set0 total: {set0Total}",f"set1 total: {set1Total}","Invalid","Energy: ",energy)
-        print(sample,f"set0 total: {set0Total}",f"set1 total: {set1Total}","Invalid")
-        invalidNum+=1
-    # get best ansewr
-    diff = abs(set0Total - set1Total)
-    if diff < bestAnswer:
-        bestAnswer = diff
-    collect.addNumPartitionData(problemNo,sample,qpu_access_time,run_time,diff,energy)
-
+        sample = sample_as_dict(sample)
+        set0Total = 0
+        set1Total = 0
+        for key, value in sample.items():
+            amount = set[key]
+            if value == 0:
+                set0Total += amount
+            elif value == 1:
+                set1Total += amount
+        if set0Total == set1Total:
+            # print(sample,f"set0 total: {set0Total}",f"set1 total: {set1Total}","Valid","Energy: ",energy)
+            print(sample,f"set0 total: {set0Total}",f"set1 total: {set1Total}","Valid")
+            validNum+=1
+            status = "Valid"
+        else:
+            # print(sample,f"set0 total: {set0Total}",f"set1 total: {set1Total}","Invalid","Energy: ",energy)
+            print(sample,f"set0 total: {set0Total}",f"set1 total: {set1Total}","Invalid")
+            invalidNum+=1
+            status = "invalid"
+        # get best ansewr
+        diff = abs(set0Total - set1Total)
+        if diff < bestAnswer:
+            bestAnswer = diff
+        if sampleNo == 0:
+            collect.addNumPartitionData(problemNo,sample,qpu_access_time,run_time,diff,status,energy)
+        collect.addAllNumPartitionData(problemNo,sample,qpu_access_time,run_time,diff,status,energy)
+        sampleNo+= 1
 
     print(f"Valid: {validNum}, Invalid: {invalidNum}, percentage: {(validNum/(invalidNum+validNum))*100}%")
+    collect.addNumPartitionPercentage(problemNo,validNum+invalidNum,validNum,invalidNum,(validNum/(invalidNum+validNum))*100)
 
 collect.saveData("numPartitionCQM")
+collect.saveAllData("allNumPartitionCQM")
+collect.savePercentageData("numPartitionCQM_percentage")

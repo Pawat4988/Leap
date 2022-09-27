@@ -50,7 +50,6 @@ for problemNo, set in enumerate(sets):
     qpu_access_time = timimgInfo["qpu_access_time"]
     run_time = timimgInfo["run_time"]
 
-
     bestAnswer = 10000
     for sample, energy in response.data(fields=['sample','energy']):
         set0Total = 0
