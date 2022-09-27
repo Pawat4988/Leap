@@ -24,12 +24,12 @@ class Collect():
 
         self.savedAt = None
 
-    def addData(self,problemNumber,answer,accessTime,runtime):
-        self.finalArray.append([problemNumber,answer,accessTime,runtime])
+    def addNumPartitionData(self,problemNumber,answer,accessTime,runtime,diff,energy):
+        self.finalArray.append([problemNumber,answer,accessTime,runtime,diff,energy])
 
     def saveData(self,fileName):
         self.savedAt = fileName+".xlsx"
-        columnName = ["Problem No.","Answer","QPU Access Time","Runtime"]
+        columnName = ["Problem No.","Answer","QPU Access Time","Runtime","diff","energy"]
         df = pd.DataFrame(numpy.array(self.finalArray), columns=columnName)
         df.to_excel(f"{fileName}.xlsx")
         

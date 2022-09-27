@@ -70,6 +70,6 @@ for problemNo, set in enumerate(sets):
         if diff < bestAnswer:
             bestAnswer = diff
 
-        collect.addData(problemNo,sample,qpu_access_time,run_time)
+        collect.addNumPartitionData(problemNo,sample,qpu_access_time,run_time,diff,energy)
 
 collect.saveData("numPartitionBQM")
