@@ -52,7 +52,7 @@ con54 = 2*i+3*j+4*k+5*l+6*m <= 2000
 
 # 15 problems
 # objectives = [obj52, obj32, obj32, obj31, obj42, obj42, obj31, obj31, obj22, obj41, obj21, obj42, obj42, obj42, obj52]
-constraints = [[con52, con53, con51], [con32, con34, con31], [con33, con34, con32, con31], [con31, con33, con34], [con44, con41, con43, con42], [con43, con41, con44, con42], [con34, con31, con32], [con32, con31], [con23, con21, con24, con22], [con42, con43], [con24, con23, con21, con22], [con41, con44, con42], [con42, con44, con41], [con41, con44, con42, con43], [con52, con54]]
+# constraints = [[con52, con53, con51], [con32, con34, con31], [con33, con34, con32, con31], [con31, con33, con34], [con44, con41, con43, con42], [con43, con41, con44, con42], [con34, con31, con32], [con32, con31], [con23, con21, con24, con22], [con42, con43], [con24, con23, con21, con22], [con41, con44, con42], [con42, con44, con41], [con41, con44, con42, con43], [con52, con54]]
 
 # 3 problems
 objectives = [obj52, obj32, obj42]

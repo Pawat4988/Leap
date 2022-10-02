@@ -4,9 +4,9 @@ import dwave.inspector
 from collections import defaultdict
 import networkx as nx
 from dimod.binary import BinaryQuadraticModel
-from dimod import ConstrainedQuadraticModel, Integer
+from dimod import ConstrainedQuadraticModel, Integer, DiscreteQuadraticModel
 import dimod
-import numpy
+import numpy as np
 import itertools
 import time
 from collect import Collect
@@ -23,30 +23,51 @@ cases = [0,1]
 variables = []
 for index, item in enumerate(set):
     variables.append(f'item{index}: {item}')
+    # variables.append(item)
+    # variables.append(index)
 
 dqm = dimod.DiscreteQuadraticModel()
 for index, item in enumerate(set):
     dqm.add_variable(2, label=f'item{index}: {item}')
+    # dqm.add_variable(2, label=item)
+    # dqm.add_variable(2, label=index)
 
 result = itertools.combinations(set, 2)
 possibleCombination = list(result)
 indices = list((i,j) for ((i,_),(j,_)) in itertools.combinations(enumerate(set), 2))
 
+for index, variable in enumerate(variables):
+    u = set[index]
+    # print(variable, u, c)
+    linearTerm = u*(u-c)*np.ones(len(cases))
+    # linearTerm = 1
+    dqm.set_linear(variable, linearTerm)
+
 for combination, combinationIndex in zip(possibleCombination,indices):
     u,v = combination
     uIndex,vIndex = combinationIndex
     # print(f"Combination of item {uIndex} and {vIndex} with value {u} and {v}")
-    sum = u+v
-    dqm.set_quadratic(variables[uIndex], variables[vIndex], {(0, 0): sum,(0,1): abs(u-v), (1,0): abs(u-v), (1,1): sum})
+    # print(variables[uIndex], variables[vIndex])
+    # print("")
+#     sum = u+v
+#     dqm.set_quadratic(variables[uIndex], variables[vIndex], {(0, 0): abs(-u-v),(0,1): abs(-u+v), (1,0): abs(u-v), (1,1): abs(u+v)})
+    dqm.set_quadratic(variables[uIndex], variables[vIndex],{(0, 0): (u*v), (0, 1): (u*v), (1, 0): (u*v), (1, 1): (u*v)})
+
+
+# for i in range(numnode)
+# 	for j in range(numnode)
+# 		 dqm.set_quadratic(i, j,{(0, 0): (s[i]*s[j]), (0, 1): (s[i]*s[j]), (1, 0): (s[i]*s[j]), (1, 1): (s[i]*s[j])})
+
+
+
 
 dqm_sampler = LeapHybridDQMSampler()
 
 # calculate here
 for _ in range(1):
-    startTime = time.time()
     sampleset = dqm_sampler.sample_dqm(dqm)
-    endTime = time.time()
-    timeTook = endTime-startTime
+    # for sample, energy in sampleset.data(fields=['sample','energy']):
+    #     print(sample,energy)
 
     validNum = 0
     invalidNum = 0
@@ -73,7 +94,7 @@ for _ in range(1):
         if diff < bestAnswer:
             bestAnswer = diff
     print(f"Valid: {validNum}, Invalid: {invalidNum}, percentage: {(validNum/(invalidNum+validNum))*100}%")
-    collect.addData(timeTook,bestAnswer)
+    # collect.addData(timeTook,bestAnswer)
 
-collect.saveData("numPartitionDQM")
+# collect.saveData("numPartitionDQM")
     

@@ -26,9 +26,6 @@ else:
 
 print(10*i+20*j+30*k)
 
-a = "what"
-b = "the"
-c = "fuck"
 d = [a,b,c]
 print(",".join(d))
 
