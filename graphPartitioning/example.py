@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import networkx as nx
 import dimod
 import matplotlib.pyplot as plt
@@ -31,21 +29,14 @@ for p0, p1 in nx.non_edges(G):
 for p0, p1 in G.edges:
     dqm.set_quadratic(p0, p1, {(c, c): ((2 * beta) - 1) for c in range(n_clusters)})
 
-numpyVector = dimod.DiscreteQuadraticModel.to_numpy_vectors(dqm)
-print(numpyVector)
-bqm = dimod.binary.BinaryQuadraticModel.from_numpy_vectors(numpyVector)
-print(bqm)
+sampler = LeapHybridDQMSampler()
+sampleset = sampler.sample_dqm(dqm, label='Example - Graph Partitioning DQM')
 
-# sampler = LeapHybridDQMSampler()
-# sampleset = sampler.sample_dqm(dqm, label='Example - Graph Partitioning DQM')
-
-# for sample, energy in sampleset.data(fields=['sample','energy']):
-#         print(sample,energy)
+for sample, energy in sampleset.data(fields=['sample','energy']):
+    print(sample,energy)
 
 # sample = sampleset.first.sample
 # energy = sampleset.first.energy
-
-# print(sample,energy)
 
 # color_list = [(random(), random(), random()) for i in range(n_clusters)]
 # color_map = [color_list[sample[i]] for i in G.nodes]

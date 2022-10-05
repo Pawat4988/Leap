@@ -39,7 +39,8 @@ indices = list((i,j) for ((i,_),(j,_)) in itertools.combinations(enumerate(set),
 for index, variable in enumerate(variables):
     u = set[index]
     # print(variable, u, c)
-    linearTerm = u*(u-c)*np.ones(len(cases))
+    linearTerm = u*(u-c)*np.ones(len(cases)) # [u*(u-c),u*(u-c)]
+    # linearTerm = [0,u*(u-c)]
     # linearTerm = 1
     dqm.set_linear(variable, linearTerm)
 
@@ -52,6 +53,7 @@ for combination, combinationIndex in zip(possibleCombination,indices):
 #     sum = u+v
 #     dqm.set_quadratic(variables[uIndex], variables[vIndex], {(0, 0): abs(-u-v),(0,1): abs(-u+v), (1,0): abs(u-v), (1,1): abs(u+v)})
     dqm.set_quadratic(variables[uIndex], variables[vIndex],{(0, 0): (u*v), (0, 1): (u*v), (1, 0): (u*v), (1, 1): (u*v)})
+    # dqm.set_quadratic(variables[uIndex], variables[vIndex],{(1, 1): (u*v)})
 
 
 # for i in range(numnode)
@@ -62,6 +64,7 @@ for combination, combinationIndex in zip(possibleCombination,indices):
 
 
 dqm_sampler = LeapHybridDQMSampler()
+
 
 # calculate here
 for _ in range(1):
