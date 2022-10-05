@@ -11,7 +11,6 @@ import time
 
 # set = [25, 7,13, 31, 42,17, 21,10]
 # set = [3,1,1,2,2,1]
-sampler = LeapHybridCQMSampler()                
 
 # i = Integer('i', upper_bound=1000)
 # j = Integer('j', upper_bound=1000)
@@ -35,6 +34,7 @@ cqm.add_constraint(i+j+k >= 100, "Min produced")
 cqm.add_constraint(i >= 50, "min product 1")
 cqm.add_constraint(2*i+3*j+4*k <= 300, "max budget")
 
+sampler = LeapHybridCQMSampler()                
 # calculate here
 sampleset = sampler.sample_cqm(cqm)
 
