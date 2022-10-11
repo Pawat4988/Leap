@@ -13,8 +13,8 @@ from collect import Collect
 collect = Collect()
 
 # set = [1,1,1,2,2,3]
-set = [25, 7,13, 31, 42,17, 21,10]
-# set = [2,8,10,3,4,5,7,8,9,12,23]
+# set = [25, 7,13, 31, 42,17, 21,10]
+set = [35, 40, 36, 34, 1, 43, 34, 31, 48, 31, 27, 27, 46, 8, 12, 8, 1, 22, 19, 31, 40, 18, 1, 44, 29]
 c = 0
 for i in set:
     c += i
@@ -23,52 +23,36 @@ cases = [0,1]
 variables = []
 for index, item in enumerate(set):
     variables.append(f'item{index}: {item}')
-    # variables.append(item)
-    # variables.append(index)
 
 dqm = dimod.DiscreteQuadraticModel()
 for index, item in enumerate(set):
     dqm.add_variable(2, label=f'item{index}: {item}')
-    # dqm.add_variable(2, label=item)
-    # dqm.add_variable(2, label=index)
 
-result = itertools.combinations(set, 2)
-possibleCombination = list(result)
-indices = list((i,j) for ((i,_),(j,_)) in itertools.combinations(enumerate(set), 2))
+gamma1 = 4
 
-for index, variable in enumerate(variables):
-    u = set[index]
-    # print(variable, u, c)
-    linearTerm = u*(u-c)*np.ones(len(cases)) # [u*(u-c),u*(u-c)]
-    # linearTerm = [0,u*(u-c)]
-    # linearTerm = 1
-    dqm.set_linear(variable, linearTerm)
+# Try
+for i,v1 in enumerate(variables):
+    for k in range(len(cases)):
+        linear = set[i]*(set[i]+c)
+        dqm.set_linear_case(v1,k,dqm.get_linear_case(v1,k)+gamma1*linear)
 
-for combination, combinationIndex in zip(possibleCombination,indices):
-    u,v = combination
-    uIndex,vIndex = combinationIndex
-    # print(f"Combination of item {uIndex} and {vIndex} with value {u} and {v}")
-    # print(variables[uIndex], variables[vIndex])
-    # print("")
-#     sum = u+v
-#     dqm.set_quadratic(variables[uIndex], variables[vIndex], {(0, 0): abs(-u-v),(0,1): abs(-u+v), (1,0): abs(u-v), (1,1): abs(u+v)})
-    dqm.set_quadratic(variables[uIndex], variables[vIndex],{(0, 0): (u*v), (0, 1): (u*v), (1, 0): (u*v), (1, 1): (u*v)})
-    # dqm.set_quadratic(variables[uIndex], variables[vIndex],{(1, 1): (u*v)})
+gamma2 = 8
 
-
-# for i in range(numnode)
-# 	for j in range(numnode)
-# 		 dqm.set_quadratic(i, j,{(0, 0): (s[i]*s[j]), (0, 1): (s[i]*s[j]), (1, 0): (s[i]*s[j]), (1, 1): (s[i]*s[j])})
-
-
-
+for i,v1 in enumerate(variables):
+    for j,v2 in enumerate(variables):
+        for k in range(len(cases)):
+            if v1 != v2:
+                quadratic = set[i]*set[j]
+                dqm.set_quadratic_case(v1,k,v2,k,dqm.get_quadratic_case(v1,k,v2,k)+quadratic*gamma2)
 
 dqm_sampler = LeapHybridDQMSampler()
 
+print(dqm_sampler.properties["parameters"])
+print(dqm_sampler.properties["minimum_time_limit"])
 
 # calculate here
 for _ in range(1):
-    sampleset = dqm_sampler.sample_dqm(dqm)
+    sampleset = dqm_sampler.sample_dqm(dqm,time_limit=5)
     # for sample, energy in sampleset.data(fields=['sample','energy']):
     #     print(sample,energy)
 
@@ -97,7 +81,7 @@ for _ in range(1):
         if diff < bestAnswer:
             bestAnswer = diff
     print(f"Valid: {validNum}, Invalid: {invalidNum}, percentage: {(validNum/(invalidNum+validNum))*100}%")
-    # collect.addData(timeTook,bestAnswer)
+#     # collect.addData(timeTook,bestAnswer)
 
-# collect.saveData("numPartitionDQM")
+# # collect.saveData("numPartitionDQM")
     
