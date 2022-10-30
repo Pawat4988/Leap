@@ -9,6 +9,7 @@ import numpy
 from hybrid.utils import sample_as_dict
 import time
 import itertools
+from dimod import ExactCQMSolver
 
 weight = [8,6,5,3]
 itemValue = [2,5,2,4]
@@ -37,11 +38,13 @@ cqm.set_objective(-objective)
 # cqm.set_objective(2*variables 5 2 4 8 6
 # 10 2 6 4)
 
-cqm.add_constraint(8*variables[0]+6*variables[1]+5*variables[2]+3*variables[3] <= 16)
+cqm.add_constraint(8*variables[0]+6*variables[1]+5*variables[2]+3*variables[3] <= 10)
 
 sampler = LeapHybridCQMSampler()
 # calculate here
 sampleset = sampler.sample_cqm(cqm)
+
+
 
 
 for sample ,energy in sampleset.data(fields=['sample','energy']):
