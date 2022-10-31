@@ -40,7 +40,7 @@ class DWaveTSPSolver(object):
     Class for solving Travelling Salesman Problem using DWave.
     Specifying starting point is not implemented.
     """
-    def __init__(self, distance_matrix, sapi_token=None, url=None,bestAnswer=None):
+    def __init__(self, distance_matrix, sapi_token=None, url=None,bestAnswer=None,time_limit=None):
 
         max_distance = np.max(np.array(distance_matrix))
         self.notScaledDistance_matrix = distance_matrix
@@ -59,6 +59,7 @@ class DWaveTSPSolver(object):
         self.solutions = []
         self.dqm = dimod.DiscreteQuadraticModel()
         self.bestAnswer = bestAnswer
+        self.time_limit = time_limit
 
     def add_variable(self):
         n = len(self.distance_matrix)
@@ -124,12 +125,12 @@ class DWaveTSPSolver(object):
         self.decode_solution(response)
         return self.solution, self.distribution
 
-    def solve_tspCQMsolver(self,time_limit=None):
+    def solve_tspCQMsolver(self):
         cqm = ConstrainedQuadraticModel.from_bqm(BinaryQuadraticModel.from_qubo(self.qubo_dict))
 
         sampler = LeapHybridCQMSampler()
-        if time_limit:
-            response = sampler.sample_cqm(cqm,time_limit=time_limit)
+        if self.time_limit:
+            response = sampler.sample_cqm(cqm,time_limit=self.time_limit)
         else:
             response = sampler.sample_cqm(cqm)
         for sample, energy in response.data(fields=['sample','energy']):
@@ -137,13 +138,13 @@ class DWaveTSPSolver(object):
         self.decode_solution(response)
         return self.solution, self.distribution
     
-    def solve_tspDQMsolver(self,time_limit=None):
+    def solve_tspDQMsolver(self):
         sampler = LeapHybridDQMSampler()
         # calculate here
         response = sampler.sample_dqm(self.dqm)
 
-        if time_limit:
-            response = sampler.sample_dqm(self.dqm,time_limit=time_limit)
+        if self.time_limit:
+            response = sampler.sample_dqm(self.dqm,time_limit=self.time_limit)
         else:
             response = sampler.sample_dqm(self.dqm)
 
@@ -310,7 +311,7 @@ distance_matrix_gr17 = [
 problemName = "gr17"
 solver = "cqm"
 timit_limit = 5
-solver = DWaveTSPSolver(distance_matrix_gr17,bestAnswer=2085)
+solver = DWaveTSPSolver(distance_matrix_gr17,bestAnswer=2085,time_limit=time_limit)
 
 solution, distribution = solver.solve_tspDQMsolver()
 solver.printSorted()

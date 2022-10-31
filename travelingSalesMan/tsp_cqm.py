@@ -41,7 +41,7 @@ class DWaveTSPSolver(object):
     Class for solving Travelling Salesman Problem using DWave.
     Specifying starting point is not implemented.
     """
-    def __init__(self, distance_matrix, sapi_token=None, url=None,bestAnswer=None):
+    def __init__(self, distance_matrix, sapi_token=None, url=None,bestAnswer=None,time_limit=None):
 
         max_distance = np.max(np.array(distance_matrix))
         self.notScaledDistance_matrix = distance_matrix
@@ -60,6 +60,7 @@ class DWaveTSPSolver(object):
         self.solutions = []
         self.bestAnswer = bestAnswer
         self.save = Save()
+        self.time_limit = time_limit
 
     # edge weight
     def add_cost_objective(self):
@@ -116,12 +117,12 @@ class DWaveTSPSolver(object):
         self.decode_solution(response)
         return self.solution, self.distribution
 
-    def solve_tspCQMsolver(self,time_limit=None):
+    def solve_tspCQMsolver(self):
         cqm = ConstrainedQuadraticModel.from_bqm(BinaryQuadraticModel.from_qubo(self.qubo_dict))
 
         sampler = LeapHybridCQMSampler()
-        if time_limit:
-            response = sampler.sample_cqm(cqm,time_limit=time_limit)
+        if self.time_limit:
+            response = sampler.sample_cqm(cqm,time_limit=self.time_limit)
         else:
             response = sampler.sample_cqm(cqm)
         for sample, energy in response.data(fields=['sample','energy']):
@@ -129,13 +130,13 @@ class DWaveTSPSolver(object):
         self.decode_solution(response)
         return self.solution, self.distribution
     
-    def solve_tspDQMsolver(self,time_limit=None):
+    def solve_tspDQMsolver(self):
         sampler = LeapHybridDQMSampler()
         # calculate here
         response = sampler.sample_dqm(self.dqm)
 
-        if time_limit:
-            response = sampler.sample_dqm(self.dqm,time_limit=time_limit)
+        if self.time_limit:
+            response = sampler.sample_dqm(self.dqm,time_limit=self.time_limit)
         else:
             response = sampler.sample_dqm(self.dqm)
 
@@ -180,7 +181,7 @@ class DWaveTSPSolver(object):
         for problemNumber, (solution,cost,energy) in enumerate(energyList):
             error = self.bestAnswer-cost
             self.save.addDataRow(problemNumber,solution,cost,error,energy)
-        self.save.saveDataToFile(f"cqm_gr17_5sec")
+        self.save.saveDataToFile(f"cqm_gr17_{self.time_limit}sec")
         print("best solution found (solution(s) with lowest energy):")
         print("--------------------------")
         sortedCostList = sorted(self.solutions, key=lambda item: item[1])
@@ -321,8 +322,8 @@ distance_matrix_gr17 = [
 
 problemName = "gr17"
 solverName = "cqm"
-time_limit = 5
-solver = DWaveTSPSolver(distance_matrix_gr17,bestAnswer=2085)
+time_limit = 15
+solver = DWaveTSPSolver(distance_matrix_gr17,bestAnswer=2085,time_limit=time_limit)
 
 solution, distribution = solver.solve_tspCQMsolver()
 solver.printSorted()
