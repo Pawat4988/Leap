@@ -41,7 +41,7 @@ class DWaveTSPSolver(object):
     Class for solving Travelling Salesman Problem using DWave.
     Specifying starting point is not implemented.
     """
-    def __init__(self, distance_matrix, sapi_token=None, url=None,bestAnswer=None,time_limit=None):
+    def __init__(self, distance_matrix, sapi_token=None, url=None,bestAnswer=None,time_limit=None,extraSuffix=''):
 
         max_distance = np.max(np.array(distance_matrix))
         self.notScaledDistance_matrix = distance_matrix
@@ -61,6 +61,7 @@ class DWaveTSPSolver(object):
         self.bestAnswer = bestAnswer
         self.save = Save()
         self.time_limit = time_limit
+        self.extraSuffix = extraSuffix
 
     # edge weight
     def add_cost_objective(self):
@@ -181,13 +182,13 @@ class DWaveTSPSolver(object):
         for problemNumber, (solution,cost,energy) in enumerate(energyList):
             error = self.bestAnswer-cost
             self.save.addDataRow(problemNumber,solution,cost,error,energy)
-        self.save.saveDataToFile(f"cqm_gr17_{self.time_limit}sec")
+        self.save.saveDataToFile(f"cqm_gr17_{self.time_limit}sec{self.extraSuffix}")
         print("best solution found (solution(s) with lowest energy):")
         print("--------------------------")
         sortedCostList = sorted(self.solutions, key=lambda item: item[1])
         costList = list(filter(lambda x: x[1] == sortedCostList[0][1], sortedCostList))
         print('\n'.join(f"solution: {solution}\tWeight: {cost}\t error: {self.bestAnswer-cost}\tenergy: {energy}" for solution,cost,energy in costList))
-
+        
     def printBest(self):
         print("Best by cost")
         print(sorted(self.solutions, key=lambda item: item[1])[0])
@@ -198,7 +199,6 @@ class DWaveTSPSolver(object):
         errorSet = [self.bestAnswer-cost for solution,cost,energy in self.solutions]
         # print(errorSet)
         return errorSet
-
 
     # def calculate_solution(self):
     #     """
@@ -323,7 +323,9 @@ distance_matrix_gr17 = [
 problemName = "gr17"
 solverName = "cqm"
 time_limit = 40
-solver = DWaveTSPSolver(distance_matrix_gr17,bestAnswer=2085,time_limit=time_limit)
+# extraSuffix = ""
+extraSuffix = "_3"
+solver = DWaveTSPSolver(distance_matrix_gr17,bestAnswer=2085,time_limit=time_limit,extraSuffix=extraSuffix)
 
 solution, distribution = solver.solve_tspCQMsolver()
 solver.printSorted()
@@ -350,4 +352,5 @@ plt.xlim(mean-(sigma*4), mean+(sigma*4))
 plt.grid(True)
 plt.show()
 
-plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}Histogram({time_limit}sec).png')
+plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}Histogram({time_limit}sec){extraSuffix}.png')
+
