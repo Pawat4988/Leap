@@ -7,7 +7,6 @@ import itertools
 import scipy.optimize
 import TSP_utilities
 import numpy as np
-from saveData import Save
 
 import tsplib95
 # problem: gr17
@@ -35,13 +34,16 @@ import statistics
 from matplotlib import pyplot as plt
 
 
-
+# gr17
+bestAnswer = 2085
+# fri26
+bestAnswer = 937
 class DWaveTSPSolver(object):
     """
     Class for solving Travelling Salesman Problem using DWave.
     Specifying starting point is not implemented.
     """
-    def __init__(self, distance_matrix, sapi_token=None, url=None,bestAnswer=None):
+    def __init__(self, distance_matrix, sapi_token=None, url=None):
 
         max_distance = np.max(np.array(distance_matrix))
         self.notScaledDistance_matrix = distance_matrix
@@ -58,8 +60,6 @@ class DWaveTSPSolver(object):
         self.add_time_constraints()
         self.add_position_constraints()
         self.solutions = []
-        self.bestAnswer = bestAnswer
-        self.save = Save()
 
     # edge weight
     def add_cost_objective(self):
@@ -72,6 +72,9 @@ class DWaveTSPSolver(object):
                     qubit_a = t * n + i
                     qubit_b = (t + 1)%n * n + j
                     self.qubo_dict[(qubit_a, qubit_b)] = self.cost_constant * self.distance_matrix[i][j]
+        # print("add cost objective")
+        # print(self.qubo_dict)
+        # print("----------------")
 
 
     def add_time_constraints(self):
@@ -87,6 +90,7 @@ class DWaveTSPSolver(object):
                     qubit_b = t * n + j
                     if i!=j:
                         self.qubo_dict[(qubit_a, qubit_b)] = 2 * self.constraint_constant
+        # print(self.qubo_dict)
 
 
     def add_position_constraints(self):
@@ -102,6 +106,7 @@ class DWaveTSPSolver(object):
                     qubit_b = t2 * n + i
                     if t1!=t2:
                         self.qubo_dict[(qubit_a, qubit_b)] = 2 * self.constraint_constant
+        # print(self.qubo_dict)
 
     # def solve_tsp(self):
     #     response = EmbeddingComposite(DWaveSampler(token=self.sapi_token, endpoint=self.url, solver='DW_2000Q_2_1')).sample_qubo(self.qubo_dict, chain_strength=self.chainstrength, num_reads=self.numruns)             
@@ -110,35 +115,20 @@ class DWaveTSPSolver(object):
 
     def solve_tspBQMsolver(self):
         sampler = LeapHybridBQMSampler()
-        response = sampler.sample_qubo(self.qubo_dict, time_limit = 10)
+        # response = sampler.sample_qubo(self.qubo_dict)
+        # response = sampler.sample_qubo(self.qubo_dict,time_limit=6)
+        response = sampler.sample_qubo(self.qubo_dict,time_limit=9)
         # for sample, energy in response.data(fields=['sample','energy']):
         #     print(sample,energy)
         self.decode_solution(response)
         return self.solution, self.distribution
 
-    def solve_tspCQMsolver(self,time_limit=None):
+    def solve_tspCQMsolver(self):
         cqm = ConstrainedQuadraticModel.from_bqm(BinaryQuadraticModel.from_qubo(self.qubo_dict))
 
-        sampler = LeapHybridCQMSampler()
-        if time_limit:
-            response = sampler.sample_cqm(cqm,time_limit=time_limit)
-        else:
-            response = sampler.sample_cqm(cqm)
-        for sample, energy in response.data(fields=['sample','energy']):
-            print(sample,energy)
-        self.decode_solution(response)
-        return self.solution, self.distribution
-    
-    def solve_tspDQMsolver(self,time_limit=None):
-        sampler = LeapHybridDQMSampler()
-        # calculate here
-        response = sampler.sample_dqm(self.dqm)
-
-        if time_limit:
-            response = sampler.sample_dqm(self.dqm,time_limit=time_limit)
-        else:
-            response = sampler.sample_dqm(self.dqm)
-
+        sampler = LeapHybridCQMSampler()     
+        # response = sampler.sample_cqm(cqm,time_limit=60)
+        response = sampler.sample_cqm(cqm)
         for sample, energy in response.data(fields=['sample','energy']):
             print(sample,energy)
         self.decode_solution(response)
@@ -172,20 +162,17 @@ class DWaveTSPSolver(object):
         return cost
 
     def printSorted(self):
+        global bestAnswer
         # solution: A,B,C,F,Z,A weight: 2305, error: -220, energy: xxxx
         print("Sort by lowest energy")
         print("--------------------------")
         energyList = sorted(self.solutions, key=lambda item: item[2])
-        print('\n'.join(f"solution: {solution}\tWeight: {cost}\t error: {self.bestAnswer-cost}\tenergy: {energy}" for solution,cost,energy in energyList))
-        for problemNumber, (solution,cost,energy) in enumerate(energyList):
-            error = self.bestAnswer-cost
-            self.save.addDataRow(problemNumber,solution,cost,error,energy)
-        self.save.saveDataToFile(f"cqm_gr17_5sec")
+        print('\n'.join(f"solution: {solution}\tWeight: {cost}\t error: {bestAnswer-cost}\tenergy: {energy}" for solution,cost,energy in energyList))
         print("best solution found (solution(s) with lowest energy):")
         print("--------------------------")
         sortedCostList = sorted(self.solutions, key=lambda item: item[1])
         costList = list(filter(lambda x: x[1] == sortedCostList[0][1], sortedCostList))
-        print('\n'.join(f"solution: {solution}\tWeight: {cost}\t error: {self.bestAnswer-cost}\tenergy: {energy}" for solution,cost,energy in costList))
+        print('\n'.join(f"solution: {solution}\tWeight: {cost}\t error: {bestAnswer-cost}\tenergy: {energy}" for solution,cost,energy in costList))
 
     def printBest(self):
         print("Best by cost")
@@ -194,7 +181,8 @@ class DWaveTSPSolver(object):
         print(sorted(self.solutions, key=lambda item: item[2])[0])
 
     def getErrorSet(self):
-        errorSet = [self.bestAnswer-cost for solution,cost,energy in self.solutions]
+        global bestAnswer
+        errorSet = [bestAnswer-cost for solution,cost,energy in self.solutions]
         # print(errorSet)
         return errorSet
 
@@ -319,33 +307,20 @@ distance_matrix_gr17 = [
 #     dist_matrix[x-1][y-1] = weight
 
 
-problemName = "gr17"
-solverName = "cqm"
-time_limit = 5
-solver = DWaveTSPSolver(distance_matrix_gr17,bestAnswer=2085)
 
-solution, distribution = solver.solve_tspCQMsolver()
+# solver = DWaveTSPSolver(distance_matrix_gr17)
+solver = DWaveTSPSolver(distance_matrix_fri26)
+# solver = DWaveTSPSolver(distance_matrix_bays29)
+
+solution, distribution = solver.solve_tspBQMsolver()
 solver.printSorted()
-setOfError = solver.getErrorSet()
+# setOfError = solver.getErrorSet()
 
-mean = sum(setOfError)/len(setOfError)
-sigma = statistics.stdev(setOfError)
-print(f"error mean: {mean}")
-print(f"error SD: {sigma}")
+# print(f"error mean: {sum(setOfError)/len(setOfError)}")
+# print(f"error SD: {statistics.stdev(setOfError)}")
 
 
 # plt.hist(setOfError)
 # plt.show()
 
-n, bins, patches = plt.hist(setOfError,density=True, facecolor='g', alpha=0.75)
-
-plt.xlabel('Count')
-plt.ylabel('Probability')
-plt.title(f'{solverName}_{problemName} time_limit={time_limit}')
-plt.text(0.1, 0.9, f'$\mu={mean:.2f},\ \sigma={sigma:.2f}$')
-plt.xlim(mean-(sigma*4), mean+(sigma*4))
-plt.ylim(0, 1)
-plt.grid(True)
-plt.show()
-
-plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}Histogram({time_limit}sec).png')
+# plt.savefig(f'travelingSalesMan/graph/{problemName}Histogram(15sec).png')
