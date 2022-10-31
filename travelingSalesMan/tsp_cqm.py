@@ -336,15 +336,16 @@ print(f"error SD: {sigma}")
 
 # plt.hist(setOfError)
 # plt.show()
-
+f, ax = plt.subplots()
 n, bins, patches = plt.hist(setOfError,density=True, facecolor='g', alpha=0.75)
 
 plt.xlabel('Count')
 plt.ylabel('Probability')
 plt.title(f'{solverName}_{problemName} time_limit={time_limit}')
-plt.text(0.1, 0.9, f'$\mu={mean:.2f},\ \sigma={sigma:.2f}$')
+# plt.text(0.1, 0.9, f'$\mu={mean:.2f},\ \sigma={sigma:.2f}$')
+plt.text(.01, .99, f'$\mu={mean:.2f},\ \sigma={sigma:.2f}$', ha='left', va='top', transform=ax.transAxes)
 plt.xlim(mean-(sigma*4), mean+(sigma*4))
-plt.ylim(0, 1)
+# plt.ylim(0, 1)
 plt.grid(True)
 plt.show()
 

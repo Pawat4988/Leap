@@ -185,12 +185,16 @@ class DWaveTSPSolver(object):
         print("--------------------------")
         energyList = sorted(self.solutions, key=lambda item: item[2])
         print('\n'.join(f"solution: {solution}\tWeight: {cost}\t error: {self.bestAnswer-cost}\tenergy: {energy}" for solution,cost,energy in energyList))
+        for problemNumber, (solution,cost,energy) in enumerate(energyList):
+            error = self.bestAnswer-cost
+            self.save.addDataRow(problemNumber,solution,cost,error,energy)
+        self.save.saveDataToFile(f"dqm_gr17_5sec")
         print("best solution found (solution(s) with lowest energy):")
         print("--------------------------")
         sortedCostList = sorted(self.solutions, key=lambda item: item[1])
         costList = list(filter(lambda x: x[1] == sortedCostList[0][1], sortedCostList))
         print('\n'.join(f"solution: {solution}\tWeight: {cost}\t error: {self.bestAnswer-cost}\tenergy: {energy}" for solution,cost,energy in costList))
-
+    
     def printBest(self):
         print("Best by cost")
         print(sorted(self.solutions, key=lambda item: item[1])[0])
@@ -319,16 +323,17 @@ print(f"error SD: {sigma}")
 
 # plt.hist(setOfError)
 # plt.show()
-
+f, ax = plt.subplots()
 n, bins, patches = plt.hist(setOfError,density=True, facecolor='g', alpha=0.75)
 
 
 plt.xlabel('Count')
 plt.ylabel('Probability')
 plt.title(f'{problemName} time_limit={timit_limit}')
-plt.text(0.1, 0.9, f'$\mu={mean:.2f},\ \sigma={sigma:.2f}$')
+# plt.text(0.1, 0.9, f'$\mu={mean:.2f},\ \sigma={sigma:.2f}$')
+plt.text(.01, .99, f'$\mu={mean:.2f},\ \sigma={sigma:.2f}$', ha='left', va='top', transform=ax.transAxes)
 plt.xlim(mean-(sigma*4), mean+(sigma*4))
-plt.ylim(0, 1)
+# plt.ylim(0, 1)
 plt.grid(True)
 plt.show()
 
