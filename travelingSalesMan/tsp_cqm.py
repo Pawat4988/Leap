@@ -322,7 +322,7 @@ distance_matrix_gr17 = [
 
 problemName = "gr17"
 solverName = "cqm"
-time_limit = 15
+time_limit = 40
 solver = DWaveTSPSolver(distance_matrix_gr17,bestAnswer=2085,time_limit=time_limit)
 
 solution, distribution = solver.solve_tspCQMsolver()
@@ -338,10 +338,10 @@ print(f"error SD: {sigma}")
 # plt.hist(setOfError)
 # plt.show()
 f, ax = plt.subplots()
-n, bins, patches = plt.hist(setOfError,density=True, facecolor='g', alpha=0.75)
+n, bins, patches = plt.hist(setOfError, facecolor='g')
 
-plt.xlabel('Count')
-plt.ylabel('Probability')
+plt.xlabel('Cost Error')
+plt.ylabel('Num of Occurances')
 plt.title(f'{solverName}_{problemName} time_limit={time_limit}')
 # plt.text(0.1, 0.9, f'$\mu={mean:.2f},\ \sigma={sigma:.2f}$')
 plt.text(.01, .99, f'$\mu={mean:.2f},\ \sigma={sigma:.2f}$', ha='left', va='top', transform=ax.transAxes)

@@ -14,5 +14,5 @@ class Save():
 
     def saveDataToFile(self,fileName):
         self.savedAt = fileName+".xlsx"
-        df = pd.DataFrame(numpy.array(self.dataRows), columns=self.columnName)
+        df = pd.DataFrame(numpy.array(self.dataRows,dtype=object), columns=self.columnName)
         df.to_excel(f"travelingSalesMan/data/{fileName}.xlsx")

@@ -87,7 +87,11 @@ for i in range(len(itemPrice)):
         Q[(i,j)] -= itemPrice[i]*itemPrice[j]*penalty
         # print(f"Q[({i},{j})] += {2*itemPrice[i]*itemPrice[j]*penalty}")
         # print(Q)
-# print(Q)
+print(Q)
+qmatrix = numpy.empty([len(itemPrice),len(itemPrice)])
+for key, value in Q.items():
+    qmatrix[key[0]][key[1]] = value
+print(qmatrix)
 
 sampler = LeapHybridBQMSampler()
 response = sampler.sample_qubo(Q)

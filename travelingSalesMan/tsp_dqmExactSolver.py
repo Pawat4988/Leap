@@ -9,6 +9,7 @@ import scipy.optimize
 import TSP_utilities
 import numpy as np
 from saveData import Save
+from dimod import ExactDQMSolver
 
 import tsplib95
 # problem: gr17
@@ -75,54 +76,48 @@ class DWaveTSPSolver(object):
                 for j in range(n):
                     if i == j:
                         continue
-                    # for case in range(2):
-                    qubit_a = t * n + i
-                    qubit_b = (t + 1)%n * n + j
-                    if qubit_a!=qubit_b:
+                    for case in range(2):
+                        qubit_a = t * n + i
+                        qubit_b = (t + 1)%n * n + j
                         # self.qubo_dict[(qubit_a, qubit_b)] = self.cost_constant * self.distance_matrix[i][j]
 
                         gamma2 = 1
                         quadratic = self.cost_constant * self.distance_matrix[i][j]
-                        dqm.set_quadratic_case(qubit_a,1,qubit_b,1,dqm.get_quadratic_case(qubit_a,1,qubit_b,1)+quadratic*gamma2)
-                        dqm.set_quadratic_case(qubit_b,1,qubit_a,1,dqm.get_quadratic_case(qubit_b,1,qubit_a,1)+quadratic*gamma2)
+                        dqm.set_quadratic_case(qubit_a,case,qubit_b,case,dqm.get_quadratic_case(qubit_a,case,qubit_b,case)+quadratic*gamma2)
 
     def add_time_constraints(self):
         n = len(self.distance_matrix)
         for t in range(n):
             for i in range(n):
-                # for case in range(2):
-                qubit_a = t * n + i
-                linear = -self.constraint_constant
-                gamma1 = 1
-                dqm.set_linear_case(qubit_a,1,dqm.get_linear_case(qubit_a,1)+gamma1*linear)
+                for case in range(2):
+                    qubit_a = t * n + i
+                    linear = -self.constraint_constant
+                    gamma1 = 1
+                    dqm.set_linear_case(qubit_a,case,dqm.get_linear_case(qubit_a,case)+gamma1*linear)
                 for j in range(n):
-                    # for case in range(2):
-                    qubit_b = t * n + j
-                    # if i!=j:
-                    if qubit_a!=qubit_b:
-                        gamma2 = 1
-                        quadratic = 2 * self.constraint_constant
-                        dqm.set_quadratic_case(qubit_a,1,qubit_b,1,dqm.get_quadratic_case(qubit_a,1,qubit_b,1)+quadratic*gamma2)
-                        dqm.set_quadratic_case(qubit_b,1,qubit_a,1,dqm.get_quadratic_case(qubit_b,1,qubit_a,1)+quadratic*gamma2)
+                    for case in range(2):
+                        qubit_b = t * n + j
+                        if i!=j:
+                            gamma2 = 1
+                            quadratic = 2 * self.constraint_constant
+                            dqm.set_quadratic_case(qubit_a,case,qubit_b,case,dqm.get_quadratic_case(qubit_a,case,qubit_b,case)+quadratic*gamma2)
 
     def add_position_constraints(self):
         n = len(self.distance_matrix)
         for i in range(n):
             for t1 in range(n):
-                # for case in range(2):
-                qubit_a = t1 * n + i
-                linear = -self.constraint_constant
-                gamma1 = 1
-                dqm.set_linear_case(qubit_a,1,dqm.get_linear_case(qubit_a,1)+gamma1*linear)
-                for t2 in range(n):
-                    # for case in range(2):
-                    qubit_b = t2 * n + i
-                    # if t1!=t2:
-                    if qubit_a!=qubit_b:
-                        gamma2 = 1
-                        quadratic = 2 * self.constraint_constant
-                        dqm.set_quadratic_case(qubit_a,1,qubit_b,1,dqm.get_quadratic_case(qubit_a,1,qubit_b,1)+quadratic*gamma2)
-                        dqm.set_quadratic_case(qubit_b,1,qubit_a,1,dqm.get_quadratic_case(qubit_b,1,qubit_a,1)+quadratic*gamma2)
+                for case in range(2):
+                    qubit_a = t1 * n + i
+                    linear = -self.constraint_constant
+                    gamma1 = 1
+                    dqm.set_linear_case(qubit_a,case,dqm.get_linear_case(qubit_a,case)+gamma1*linear)
+                    for t2 in range(n):
+                        for case in range(2):
+                            qubit_b = t2 * n + i
+                            if t1!=t2:
+                                gamma2 = 1
+                                quadratic = 2 * self.constraint_constant
+                                dqm.set_quadratic_case(qubit_a,case,qubit_b,case,dqm.get_quadratic_case(qubit_a,case,qubit_b,case)+quadratic*gamma2)
 
     def solve_tspBQMsolver(self):
         sampler = LeapHybridBQMSampler()
@@ -146,14 +141,7 @@ class DWaveTSPSolver(object):
         return self.solution, self.distribution
     
     def solve_tspDQMsolver(self):
-        sampler = LeapHybridDQMSampler()
-        # calculate here
-        response = sampler.sample_dqm(dqm)
-
-        if self.time_limit:
-            response = sampler.sample_dqm(dqm,time_limit=self.time_limit)
-        else:
-            response = sampler.sample_dqm(dqm)
+        response = ExactDQMSolver().sample_dqm(dqm)
 
         for sample, energy in response.data(fields=['sample','energy']):
             print(sample,energy)
@@ -195,8 +183,8 @@ class DWaveTSPSolver(object):
         print('\n'.join(f"solution: {solution}\tWeight: {cost}\t error: {self.bestAnswer-cost}\tenergy: {energy}" for solution,cost,energy in energyList))
         for problemNumber, (solution,cost,energy) in enumerate(energyList):
             error = self.bestAnswer-cost
-            self.save.addDataRow(problemNumber,solution,cost,error,energy)
-        self.save.saveDataToFile(f"dqm_gr17_5sec")
+            # self.save.addDataRow(problemNumber,solution,cost,error,energy)
+        # self.save.saveDataToFile(f"dqm_gr17_5sec")
         print("best solution found (solution(s) with lowest energy):")
         print("--------------------------")
         sortedCostList = sorted(self.solutions, key=lambda item: item[1])
@@ -300,13 +288,6 @@ distance_matrix_gr17 = [
 distance_matrix_3x3 = [ [0,4,1],
                     [4,0,2],
                     [1,2,0],]
-
-
-distance_matrix_4x4 = [ [0,4,1,3],
-                    [4,0,2,1],
-                    [1,2,0,5],
-                    [3,1,5,0] ]
-
 # problemName = "gr17"
 # problemName = "a280"
 # problem = tsplib95.load(f'tsplib-master/{problemName}.tsp')
@@ -327,15 +308,9 @@ distance_matrix_4x4 = [ [0,4,1,3],
 #     dist_matrix[x-1][y-1] = weight
 
 problemName = "gr17"
-solverName = "dqm"
-timit_limit = 15
-solver = DWaveTSPSolver(distance_matrix_gr17,bestAnswer=2085,time_limit=timit_limit)
-
-# n = len(distance_matrix_3x3)
-# for i in range(n**2):
-#     print(dqm.get_cases(i))
-#     print(dqm.get_linear_case(i,0))
-#     print(dqm.get_linear_case(i,1))
+solver = "dqm"
+timit_limit = 5
+solver = DWaveTSPSolver(distance_matrix_3x3,bestAnswer=0,time_limit=None)
 
 solution, distribution = solver.solve_tspDQMsolver()
 solver.printSorted()
@@ -348,18 +323,17 @@ print(f"error SD: {sigma}")
 
 # plt.hist(setOfError)
 # plt.show()
-f, ax = plt.subplots()
-n, bins, patches = plt.hist(setOfError, facecolor='g')
+# f, ax = plt.subplots()
+# n, bins, patches = plt.hist(setOfError, facecolor='g')
 
-plt.xlabel('Cost Error')
-plt.ylabel('Num of Occurances')
-plt.title(f'{problemName} time_limit={timit_limit}')
-# plt.text(0.1, 0.9, f'$\mu={mean:.2f},\ \sigma={sigma:.2f}$')
-plt.text(.01, .99, f'$\mu={mean:.2f},\ \sigma={sigma:.2f}$', ha='left', va='top', transform=ax.transAxes)
-plt.xlim(mean-(sigma*4), mean+(sigma*4))
-# plt.ylim(0, 1)
-plt.grid(True)
-plt.show()
+# plt.xlabel('Cost Error')
+# plt.ylabel('Num of Occurances')
+# plt.title(f'{problemName} time_limit={timit_limit}')
+# # plt.text(0.1, 0.9, f'$\mu={mean:.2f},\ \sigma={sigma:.2f}$')
+# plt.text(.01, .99, f'$\mu={mean:.2f},\ \sigma={sigma:.2f}$', ha='left', va='top', transform=ax.transAxes)
+# plt.xlim(mean-(sigma*4), mean+(sigma*4))
+# # plt.ylim(0, 1)
+# plt.grid(True)
+# plt.show()
 
-plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}Histogram({timit_limit}sec).png')
-# plt.savefig(f'travelingSalesMan/graph/testOnlyCase1_gr17.png')
+# plt.savefig(f'travelingSalesMan/graph/{solver}_{problemName}Histogram({timit_limit}sec).png')

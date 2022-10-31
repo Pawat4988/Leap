@@ -37,7 +37,7 @@ from matplotlib import pyplot as plt
 # gr17
 bestAnswer = 2085
 # fri26
-bestAnswer = 937
+# bestAnswer = 937
 class DWaveTSPSolver(object):
     """
     Class for solving Travelling Salesman Problem using DWave.
@@ -117,6 +117,7 @@ class DWaveTSPSolver(object):
         sampler = LeapHybridBQMSampler()
         # response = sampler.sample_qubo(self.qubo_dict)
         # response = sampler.sample_qubo(self.qubo_dict,time_limit=6)
+        # response = sampler.sample_qubo(self.qubo_dict,time_limit=7)
         response = sampler.sample_qubo(self.qubo_dict,time_limit=9)
         # for sample, energy in response.data(fields=['sample','energy']):
         #     print(sample,energy)
@@ -308,8 +309,8 @@ distance_matrix_gr17 = [
 
 
 
-# solver = DWaveTSPSolver(distance_matrix_gr17)
-solver = DWaveTSPSolver(distance_matrix_fri26)
+solver = DWaveTSPSolver(distance_matrix_gr17)
+# solver = DWaveTSPSolver(distance_matrix_fri26)
 # solver = DWaveTSPSolver(distance_matrix_bays29)
 
 solution, distribution = solver.solve_tspBQMsolver()
