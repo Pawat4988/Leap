@@ -62,6 +62,7 @@ class DWaveTSPSolver(object):
         self.save = Save()
         self.time_limit = time_limit
         self.extraSuffix = extraSuffix
+        self.bestAnswerError = None
 
     # edge weight
     def add_cost_objective(self):
@@ -179,6 +180,7 @@ class DWaveTSPSolver(object):
         print("--------------------------")
         energyList = sorted(self.solutions, key=lambda item: item[2])
         print('\n'.join(f"solution: {solution}\tWeight: {cost}\t error: {self.bestAnswer-cost}\tenergy: {energy}" for solution,cost,energy in energyList))
+        self.bestAnswerError = self.bestAnswer-energyList[0][1]
         for problemNumber, (solution,cost,energy) in enumerate(energyList):
             error = self.bestAnswer-cost
             self.save.addDataRow(problemNumber,solution,cost,error,energy)
@@ -319,38 +321,56 @@ distance_matrix_gr17 = [
 #     print(weight)
 #     dist_matrix[x-1][y-1] = weight
 
-
+bestAnswerErrors = []
+times = [5,10,20,30,40]
+suffixes = ["","_2","_3"]
 problemName = "gr17"
+bestAnswer = 2085
 solverName = "cqm"
-time_limit = 40
-# extraSuffix = ""
-extraSuffix = "_3"
-solver = DWaveTSPSolver(distance_matrix_gr17,bestAnswer=2085,time_limit=time_limit,extraSuffix=extraSuffix)
+for time_limit in times:
+    for extraSuffix in suffixes:
+        solver = DWaveTSPSolver(distance_matrix_gr17,bestAnswer=bestAnswer,time_limit=time_limit,extraSuffix=extraSuffix)
 
-solution, distribution = solver.solve_tspCQMsolver()
-solver.printSorted()
-setOfError = solver.getErrorSet()
+        solution, distribution = solver.solve_tspCQMsolver()
+        solver.printSorted()
+        setOfError = solver.getErrorSet()
+        bestAnswerErrors.append(solver.bestAnswerError)
 
-mean = sum(setOfError)/len(setOfError)
-sigma = statistics.stdev(setOfError)
-print(f"error mean: {mean}")
-print(f"error SD: {sigma}")
+        mean = sum(setOfError)/len(setOfError)
+        sigma = statistics.stdev(setOfError)
+        print(f"error mean: {mean}")
+        print(f"error SD: {sigma}")
 
 
-# plt.hist(setOfError)
-# plt.show()
-f, ax = plt.subplots()
-n, bins, patches = plt.hist(setOfError, facecolor='g')
+        # plt.hist(setOfError)
+        # plt.show()
+        f, ax = plt.subplots()
+        n, bins, patches = plt.hist(setOfError, facecolor='g')
 
-plt.xlabel('Cost Error')
-plt.ylabel('Num of Occurances')
-plt.title(f'{solverName}_{problemName} time_limit={time_limit}')
-# plt.text(0.1, 0.9, f'$\mu={mean:.2f},\ \sigma={sigma:.2f}$')
-plt.text(.01, .99, f'$\mu={mean:.2f},\ \sigma={sigma:.2f}$', ha='left', va='top', transform=ax.transAxes)
-plt.xlim(mean-(sigma*4), mean+(sigma*4))
-# plt.ylim(0, 1)
-plt.grid(True)
+        plt.xlabel('Cost Error')
+        plt.ylabel('Num of Occurances')
+        plt.title(f'{solverName}_{problemName} time_limit={time_limit}')
+        # plt.text(0.1, 0.9, f'$\mu={mean:.2f},\ \sigma={sigma:.2f}$')
+        plt.text(.01, .99, f'$\mu={mean:.2f},\ \sigma={sigma:.2f}$', ha='left', va='top', transform=ax.transAxes)
+        plt.xlim(mean-(sigma*4), mean+(sigma*4))
+        # plt.ylim(0, 1)
+        plt.grid(True)
+        plt.show()
+
+        plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}Histogram({time_limit}sec){extraSuffix}.png')
+
+print(bestAnswerErrors)
+
+x = np.array([5,5,5,10,10,10,20,20,20,30,30,30,40,40,40])
+y = np.array(bestAnswerErrors)
+plt.plot(x, y,"ro")
 plt.show()
+plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}Plot.png')
+plt.clf()
 
-plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}Histogram({time_limit}sec){extraSuffix}.png')
-
+x = np.array([5,10,20,30,40])
+mean = [(bestAnswerErrors[(i*3)]+bestAnswerErrors[(i*3+1)]+bestAnswerErrors[(i*3+2)])/3 for i in range(5)]
+y = np.array(mean)
+plt.plot(x, y,"ro")
+plt.show()
+plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}MeanPlot.png')

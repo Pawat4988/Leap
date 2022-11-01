@@ -43,7 +43,7 @@ class DWaveTSPSolver(object):
     Class for solving Travelling Salesman Problem using DWave.
     Specifying starting point is not implemented.
     """
-    def __init__(self, distance_matrix, sapi_token=None, url=None):
+    def __init__(self, distance_matrix, sapi_token=None, url=None,bestAnswer=None,time_limit=None,extraSuffix=''):
 
         max_distance = np.max(np.array(distance_matrix))
         self.notScaledDistance_matrix = distance_matrix
@@ -60,6 +60,12 @@ class DWaveTSPSolver(object):
         self.add_time_constraints()
         self.add_position_constraints()
         self.solutions = []
+        self.bestAnswer = bestAnswer
+        self.time_limit = time_limit
+        self.extraSuffix = extraSuffix
+        self.bestAnswerError = None
+        self.qpu_access_time = None
+        self.run_time = None
 
     # edge weight
     def add_cost_objective(self):
@@ -115,10 +121,14 @@ class DWaveTSPSolver(object):
 
     def solve_tspBQMsolver(self):
         sampler = LeapHybridBQMSampler()
-        # response = sampler.sample_qubo(self.qubo_dict)
-        # response = sampler.sample_qubo(self.qubo_dict,time_limit=6)
-        # response = sampler.sample_qubo(self.qubo_dict,time_limit=7)
-        response = sampler.sample_qubo(self.qubo_dict,time_limit=9)
+
+        if self.time_limit:
+            response = sampler.sample_qubo(self.qubo_dict,time_limit=self.time_limit)
+            timimgInfo = response.info
+            self.qpu_access_time = timimgInfo["qpu_access_time"]
+            self.run_time = timimgInfo["run_time"]
+        else:
+            response = sampler.sample_qubo(self.qubo_dict)
         # for sample, energy in response.data(fields=['sample','energy']):
         #     print(sample,energy)
         self.decode_solution(response)
@@ -169,6 +179,7 @@ class DWaveTSPSolver(object):
         print("--------------------------")
         energyList = sorted(self.solutions, key=lambda item: item[2])
         print('\n'.join(f"solution: {solution}\tWeight: {cost}\t error: {bestAnswer-cost}\tenergy: {energy}" for solution,cost,energy in energyList))
+        self.bestAnswerError = self.bestAnswer-energyList[0][1]
         print("best solution found (solution(s) with lowest energy):")
         print("--------------------------")
         sortedCostList = sorted(self.solutions, key=lambda item: item[1])
@@ -308,20 +319,39 @@ distance_matrix_gr17 = [
 #     dist_matrix[x-1][y-1] = weight
 
 
+bestAnswerErrors = []
+qpuTime = []
+runTime = []
+times = [5,10,20,30,40]
+suffixes = ["","_2","_3"]
+problemName = "gr17"
+bestAnswer = 2085
+solverName = "bqm"
 
-solver = DWaveTSPSolver(distance_matrix_gr17)
-# solver = DWaveTSPSolver(distance_matrix_fri26)
-# solver = DWaveTSPSolver(distance_matrix_bays29)
+for time_limit in times:
+    for extraSuffix in suffixes:
+        
+        solver = DWaveTSPSolver(distance_matrix_gr17,time_limit=time_limit)
+        solution, distribution = solver.solve_tspBQMsolver()
+        solver.printSorted()
+        bestAnswerErrors.append(solver.bestAnswerError)
+        qpuTime.append(solver.qpu_access_time)
+        runTime.append(solver.run_time)
 
-solution, distribution = solver.solve_tspBQMsolver()
-solver.printSorted()
-# setOfError = solver.getErrorSet()
+print(bestAnswerErrors)
+print(qpuTime)
+print(runTime)
 
-# print(f"error mean: {sum(setOfError)/len(setOfError)}")
-# print(f"error SD: {statistics.stdev(setOfError)}")
+x = np.array([5,5,5,10,10,10,20,20,20,30,30,30,40,40,40])
+y = np.array(bestAnswerErrors)
+plt.plot(x, y,"ro")
+plt.show()
+plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}Plot.png')
+plt.clf()
 
-
-# plt.hist(setOfError)
-# plt.show()
-
-# plt.savefig(f'travelingSalesMan/graph/{problemName}Histogram(15sec).png')
+x = np.array([5,10,20,30,40])
+mean = [(bestAnswerErrors[(i*3)]+bestAnswerErrors[(i*3+1)]+bestAnswerErrors[(i*3+2)])/3 for i in range(5)]
+y = np.array(mean)
+plt.plot(x, y,"ro")
+plt.show()
+plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}MeanPlot.png')

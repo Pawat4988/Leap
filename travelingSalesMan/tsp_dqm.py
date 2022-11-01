@@ -41,7 +41,7 @@ class DWaveTSPSolver(object):
     Class for solving Travelling Salesman Problem using DWave.
     Specifying starting point is not implemented.
     """
-    def __init__(self, distance_matrix, sapi_token=None, url=None,bestAnswer=None,time_limit=None):
+    def __init__(self, distance_matrix, sapi_token=None, url=None,bestAnswer=None,time_limit=None,extraSuffix=''):
 
         max_distance = np.max(np.array(distance_matrix))
         self.notScaledDistance_matrix = distance_matrix
@@ -62,6 +62,8 @@ class DWaveTSPSolver(object):
         self.bestAnswer = bestAnswer
         self.time_limit = time_limit
         self.save = Save()
+        self.extraSuffix = extraSuffix
+        self.bestAnswerError = None
 
     def add_variable(self):
         n = len(self.distance_matrix)
@@ -193,10 +195,11 @@ class DWaveTSPSolver(object):
         print("--------------------------")
         energyList = sorted(self.solutions, key=lambda item: item[2])
         print('\n'.join(f"solution: {solution}\tWeight: {cost}\t error: {self.bestAnswer-cost}\tenergy: {energy}" for solution,cost,energy in energyList))
+        self.bestAnswerError = self.bestAnswer-energyList[0][1]
         for problemNumber, (solution,cost,energy) in enumerate(energyList):
             error = self.bestAnswer-cost
             self.save.addDataRow(problemNumber,solution,cost,error,energy)
-        self.save.saveDataToFile(f"dqm_gr17_5sec")
+        self.save.saveDataToFile(f"dqm_gr17_{self.time_limit}sec{self.extraSuffix}")
         print("best solution found (solution(s) with lowest energy):")
         print("--------------------------")
         sortedCostList = sorted(self.solutions, key=lambda item: item[1])
@@ -326,40 +329,59 @@ distance_matrix_4x4 = [ [0,4,1,3],
 #     print(weight)
 #     dist_matrix[x-1][y-1] = weight
 
+
+bestAnswerErrors = []
+times = [5,10,20,30,40]
+suffixes = ["","_2","_3"]
 problemName = "gr17"
+bestAnswer = 2085
 solverName = "dqm"
-timit_limit = 15
-solver = DWaveTSPSolver(distance_matrix_gr17,bestAnswer=2085,time_limit=timit_limit)
+for time_limit in times:
+    for extraSuffix in suffixes:
+        print(time_limit,extraSuffix)
+        dqm = DiscreteQuadraticModel()
+        solver = DWaveTSPSolver(distance_matrix_gr17,bestAnswer=bestAnswer,time_limit=time_limit,extraSuffix=extraSuffix)
 
-# n = len(distance_matrix_3x3)
-# for i in range(n**2):
-#     print(dqm.get_cases(i))
-#     print(dqm.get_linear_case(i,0))
-#     print(dqm.get_linear_case(i,1))
+        solution, distribution = solver.solve_tspDQMsolver()
+        solver.printSorted()
+        setOfError = solver.getErrorSet()
+        bestAnswerErrors.append(solver.bestAnswerError)
 
-solution, distribution = solver.solve_tspDQMsolver()
-solver.printSorted()
-setOfError = solver.getErrorSet()
+        mean = sum(setOfError)/len(setOfError)
+        sigma = statistics.stdev(setOfError)
+        print(f"error mean: {mean}")
+        print(f"error SD: {sigma}")
 
-mean = sum(setOfError)/len(setOfError)
-sigma = statistics.stdev(setOfError)
-print(f"error mean: {mean}")
-print(f"error SD: {sigma}")
 
-# plt.hist(setOfError)
-# plt.show()
-f, ax = plt.subplots()
-n, bins, patches = plt.hist(setOfError, facecolor='g')
+        # plt.hist(setOfError)
+        # plt.show()
+        f, ax = plt.subplots()
+        n, bins, patches = plt.hist(setOfError, facecolor='g')
 
-plt.xlabel('Cost Error')
-plt.ylabel('Num of Occurances')
-plt.title(f'{problemName} time_limit={timit_limit}')
-# plt.text(0.1, 0.9, f'$\mu={mean:.2f},\ \sigma={sigma:.2f}$')
-plt.text(.01, .99, f'$\mu={mean:.2f},\ \sigma={sigma:.2f}$', ha='left', va='top', transform=ax.transAxes)
-plt.xlim(mean-(sigma*4), mean+(sigma*4))
-# plt.ylim(0, 1)
-plt.grid(True)
+        plt.xlabel('Cost Error')
+        plt.ylabel('Num of Occurances')
+        plt.title(f'{solverName}_{problemName} time_limit={time_limit}')
+        # plt.text(0.1, 0.9, f'$\mu={mean:.2f},\ \sigma={sigma:.2f}$')
+        plt.text(.01, .99, f'$\mu={mean:.2f},\ \sigma={sigma:.2f}$', ha='left', va='top', transform=ax.transAxes)
+        plt.xlim(mean-(sigma*4), mean+(sigma*4))
+        # plt.ylim(0, 1)
+        plt.grid(True)
+        plt.show()
+
+        plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}Histogram({time_limit}sec){extraSuffix}.png')
+
+print(bestAnswerErrors)
+
+x = np.array([5,5,5,10,10,10,20,20,20,30,30,30,40,40,40])
+y = np.array(bestAnswerErrors)
+plt.plot(x, y,"ro")
 plt.show()
+plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}Plot.png')
+plt.clf()
 
-plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}Histogram({timit_limit}sec).png')
-# plt.savefig(f'travelingSalesMan/graph/testOnlyCase1_gr17.png')
+x = np.array([5,10,20,30,40])
+mean = [(bestAnswerErrors[(i*3)]+bestAnswerErrors[(i*3+1)]+bestAnswerErrors[(i*3+2)])/3 for i in range(5)]
+y = np.array(mean)
+plt.plot(x, y,"ro")
+plt.show()
+plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}MeanPlot.png')
