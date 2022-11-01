@@ -41,7 +41,7 @@ class DWaveTSPSolver(object):
     Class for solving Travelling Salesman Problem using DWave.
     Specifying starting point is not implemented.
     """
-    def __init__(self, distance_matrix, sapi_token=None, url=None,bestAnswer=None,time_limit=None,extraSuffix=''):
+    def __init__(self, distance_matrix, sapi_token=None, url=None,bestAnswer=None,time_limit=None,extraSuffix='',problemName=None):
 
         max_distance = np.max(np.array(distance_matrix))
         self.notScaledDistance_matrix = distance_matrix
@@ -64,6 +64,7 @@ class DWaveTSPSolver(object):
         self.save = Save()
         self.extraSuffix = extraSuffix
         self.bestAnswerError = None
+        self.problemName = problemName
 
     def add_variable(self):
         n = len(self.distance_matrix)
@@ -142,8 +143,8 @@ class DWaveTSPSolver(object):
             response = sampler.sample_cqm(cqm,time_limit=self.time_limit)
         else:
             response = sampler.sample_cqm(cqm)
-        for sample, energy in response.data(fields=['sample','energy']):
-            print(sample,energy)
+        # for sample, energy in response.data(fields=['sample','energy']):
+        #     print(sample,energy)
         self.decode_solution(response)
         return self.solution, self.distribution
     
@@ -152,11 +153,17 @@ class DWaveTSPSolver(object):
 
         if self.time_limit:
             response = sampler.sample_dqm(dqm,time_limit=self.time_limit)
+            timimgInfo = response.info
+            self.qpu_access_time = timimgInfo["qpu_access_time"]
+            self.run_time = timimgInfo["run_time"]
         else:
             response = sampler.sample_dqm(dqm)
+            timimgInfo = response.info
+            self.qpu_access_time = timimgInfo["qpu_access_time"]
+            self.run_time = timimgInfo["run_time"]
 
-        for sample, energy in response.data(fields=['sample','energy']):
-            print(sample,energy)
+        # for sample, energy in response.data(fields=['sample','energy']):
+        #     print(sample,energy)
         self.decode_solution(response)
         return self.solution, self.distribution
 
@@ -196,8 +203,8 @@ class DWaveTSPSolver(object):
         self.bestAnswerError = self.bestAnswer-energyList[0][1]
         for problemNumber, (solution,cost,energy) in enumerate(energyList):
             error = self.bestAnswer-cost
-            self.save.addDataRow(problemNumber,solution,cost,error,energy)
-        self.save.saveDataToFile(f"dqm_gr17_{self.time_limit}sec{self.extraSuffix}")
+            self.save.addDataRowWithTime(problemNumber,solution,cost,error,energy,self.qpu_access_time,self.run_time)
+        self.save.saveDataToFileWithTime(f"dqm_{self.problemName}_{self.time_limit}sec{self.extraSuffix}")
         print("best solution found (solution(s) with lowest energy):")
         print("--------------------------")
         sortedCostList = sorted(self.solutions, key=lambda item: item[1])
@@ -329,16 +336,16 @@ distance_matrix_4x4 = [ [0,4,1,3],
 
 
 bestAnswerErrors = []
-times = [5,10,20,30,40]
+times = [5.595,10,20,30,40]
 suffixes = ["","_2","_3"]
-problemName = "gr17"
-bestAnswer = 2085
+problemName = "fri26"
+bestAnswer = 937
 solverName = "dqm"
 for time_limit in times:
     for extraSuffix in suffixes:
         print(time_limit,extraSuffix)
         dqm = DiscreteQuadraticModel()
-        solver = DWaveTSPSolver(distance_matrix_gr17,bestAnswer=bestAnswer,time_limit=time_limit,extraSuffix=extraSuffix)
+        solver = DWaveTSPSolver(distance_matrix_fri26,bestAnswer=bestAnswer,time_limit=time_limit,extraSuffix=extraSuffix,problemName=problemName)
 
         solution, distribution = solver.solve_tspDQMsolver()
         solver.printSorted()
@@ -367,17 +374,18 @@ for time_limit in times:
         plt.show()
 
         plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}Histogram({time_limit}sec){extraSuffix}.png')
-
+        plt.clf()
+        
 print(bestAnswerErrors)
 
-x = np.array([5,5,5,10,10,10,20,20,20,30,30,30,40,40,40])
+x = np.array([5.595,5.595,5.595,10,10,10,20,20,20,30,30,30,40,40,40])
 y = np.array(bestAnswerErrors)
 plt.plot(x, y,"ro")
 plt.show()
 plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}Plot.png')
 plt.clf()
 
-x = np.array([5,10,20,30,40])
+x = np.array([5.595,10,20,30,40])
 mean = [(bestAnswerErrors[(i*3)]+bestAnswerErrors[(i*3+1)]+bestAnswerErrors[(i*3+2)])/3 for i in range(5)]
 y = np.array(mean)
 plt.plot(x, y,"ro")
