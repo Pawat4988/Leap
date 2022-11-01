@@ -33,7 +33,7 @@ import matplotlib.pyplot as plt
 import statistics
 from matplotlib import pyplot as plt
 
-
+save = Save()
 # gr17
 bestAnswer = 2085
 # fri26
@@ -180,6 +180,9 @@ class DWaveTSPSolver(object):
         energyList = sorted(self.solutions, key=lambda item: item[2])
         print('\n'.join(f"solution: {solution}\tWeight: {cost}\t error: {bestAnswer-cost}\tenergy: {energy}" for solution,cost,energy in energyList))
         self.bestAnswerError = self.bestAnswer-energyList[0][1]
+        for problemNumber, (solution,cost,energy) in enumerate(energyList):
+            error = self.bestAnswer-cost
+            save.addDataRowBQM(problemNumber,solution,cost,error,energy,self.qpu_access_time,self.run_time)
         print("best solution found (solution(s) with lowest energy):")
         print("--------------------------")
         sortedCostList = sorted(self.solutions, key=lambda item: item[1])
@@ -341,6 +344,8 @@ for time_limit in times:
 print(bestAnswerErrors)
 print(qpuTime)
 print(runTime)
+
+save.saveDataToFileBQM("bqmRecords")
 
 x = np.array([5,5,5,10,10,10,20,20,20,30,30,30,40,40,40])
 y = np.array(bestAnswerErrors)
