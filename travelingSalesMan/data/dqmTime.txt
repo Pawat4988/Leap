@@ -1,0 +1,103 @@
+5 sec
+qpu_access_time
+00 h : 00 m : 00.103 s
+run_time
+00 h : 00 m : 04.974 s
+
+qpu_access_time
+00 h : 00 m : 00.104 s
+run_time
+00 h : 00 m : 05.087 s
+
+qpu_access_time
+00 h : 00 m : 00.103 s
+run_time
+00 h : 00 m : 04.984 s
+
+10 sec
+qpu_access_time
+00 h : 00 m : 00.190 s
+charge_time
+00 h : 00 m : 09.951 s
+run_time
+00 h : 00 m : 09.951 s
+
+qpu_access_time
+00 h : 00 m : 00.189 s
+charge_time
+00 h : 00 m : 09.984 s
+run_time
+00 h : 00 m : 09.984 s
+
+qpu_access_time
+00 h : 00 m : 00.190 s
+charge_time
+00 h : 00 m : 09.988 s
+run_time
+00 h : 00 m : 09.988 s
+
+20 sec
+qpu_access_time
+00 h : 00 m : 00.190 s
+charge_time
+00 h : 00 m : 19.971 s
+run_time
+00 h : 00 m : 19.971 s
+
+qpu_access_time
+00 h : 00 m : 00.190 s
+charge_time
+00 h : 00 m : 19.946 s
+run_time
+00 h : 00 m : 19.946 s
+
+qpu_access_time
+00 h : 00 m : 00.190 s
+charge_time
+00 h : 00 m : 19.939 s
+run_time
+00 h : 00 m : 19.939 s
+
+30 sec
+qpu_access_time
+00 h : 00 m : 00.190 s
+charge_time
+00 h : 00 m : 29.936 s
+run_time
+00 h : 00 m : 29.936 s
+
+qpu_access_time
+00 h : 00 m : 00.190 s
+charge_time
+00 h : 00 m : 29.938 s
+run_time
+00 h : 00 m : 29.938 s
+
+qpu_access_time
+00 h : 00 m : 00.190 s
+charge_time
+00 h : 00 m : 29.952 s
+run_time
+00 h : 00 m : 29.952 s
+
+40 sec
+qpu_access_time
+00 h : 00 m : 00.190 s
+charge_time
+00 h : 00 m : 39.921 s
+run_time
+00 h : 00 m : 39.921 s
+
+qpu_access_time
+00 h : 00 m : 00.190 s
+charge_time
+00 h : 00 m : 39.929 s
+run_time
+00 h : 00 m : 39.929 s
+
+qpu_access_time
+00 h : 00 m : 00.190 s
+charge_time
+00 h : 00 m : 39.919 s
+run_time
+00 h : 00 m : 39.919 s
