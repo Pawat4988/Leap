@@ -134,8 +134,6 @@ class DWaveTSPSolver(object):
     
     def solve_tspDQMsolver(self):
         sampler = LeapHybridDQMSampler()
-        # calculate here
-        response = sampler.sample_dqm(self.dqm)
 
         if self.time_limit:
             response = sampler.sample_dqm(self.dqm,time_limit=self.time_limit)
