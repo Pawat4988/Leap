@@ -35,6 +35,9 @@ import statistics
 from matplotlib import pyplot as plt
 
 save = Save()
+# save.addDataRow(1,2,3,4,5)
+# save.saveDataToFile("somethihng")
+
 # gr17
 bestAnswer = 2085
 # fri26
@@ -330,17 +333,21 @@ bestAnswerErrors = []
 qpuTime = []
 runTime = []
 # times = [5,10,20,30,40]
-times = [5,10,20,30]
-suffixes = ["","_2","_3"]
-problemName = "fri26"
-bestAnswer = 937
-solverName = "bqm"
+times = [None]
+suffixes = ["","_2","_3","_4","_5"]
+# suffixes = ["_4","_5"]
 
+# problemName = "fri26"
+# bestAnswer = 937
+
+problemName = "gr17"
+bestAnswer = 2085
+
+solverName = "bqm"
 for time_limit in times:
     for extraSuffix in suffixes:
-# time_limit = 3
-# extraSuffix=""
-        solver = DWaveTSPSolver(distance_matrix_fri26,time_limit=time_limit,bestAnswer=bestAnswer)
+        print(time_limit,extraSuffix)
+        solver = DWaveTSPSolver(distance_matrix_gr17,time_limit=time_limit,bestAnswer=bestAnswer)
         solution, distribution = solver.solve_tspBQMsolver()
         solver.printSorted()
         bestAnswerErrors.append(solver.bestAnswerError)
@@ -353,16 +360,16 @@ print(runTime)
 
 save.saveDataToFileWithTime(f"bqmRecords_{problemName}")
 
-x = np.array([5,5,5,10,10,10,20,20,20,30,30,30])
-y = np.array(bestAnswerErrors)
-plt.plot(x, y,"ro")
-plt.show()
-plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}Plot.png')
-plt.clf()
+# x = np.array([5,5,5,10,10,10,20,20,20,30,30,30])
+# y = np.array(bestAnswerErrors)
+# plt.plot(x, y,"ro")
+# plt.show()
+# plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}Plot.png')
+# plt.clf()
 
-x = np.array([5,10,20,30])
-mean = [(bestAnswerErrors[(i*3)]+bestAnswerErrors[(i*3+1)]+bestAnswerErrors[(i*3+2)])/3 for i in range(4)]
-y = np.array(mean)
-plt.plot(x, y,"ro")
-plt.show()
-plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}MeanPlot.png')
+# x = np.array([5,10,20,30])
+# mean = [(bestAnswerErrors[(i*3)]+bestAnswerErrors[(i*3+1)]+bestAnswerErrors[(i*3+2)])/3 for i in range(4)]
+# y = np.array(mean)
+# plt.plot(x, y,"ro")
+# plt.show()
+# plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}MeanPlot.png')

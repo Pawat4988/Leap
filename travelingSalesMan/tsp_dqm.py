@@ -336,16 +336,23 @@ distance_matrix_4x4 = [ [0,4,1,3],
 
 
 bestAnswerErrors = []
-times = [5.595,10,20,30,40]
-suffixes = ["","_2","_3"]
-problemName = "fri26"
-bestAnswer = 937
+# times = [5.595,10,20,30,40]
+times = [5,10,20,30,40]
+# suffixes = ["","_2","_3"]
+suffixes = ["_4","_5"]
+
+# problemName = "fri26"
+# bestAnswer = 937
+
+problemName = "gr17"
+bestAnswer = 2085
+
 solverName = "dqm"
 for time_limit in times:
     for extraSuffix in suffixes:
         print(time_limit,extraSuffix)
         dqm = DiscreteQuadraticModel()
-        solver = DWaveTSPSolver(distance_matrix_fri26,bestAnswer=bestAnswer,time_limit=time_limit,extraSuffix=extraSuffix,problemName=problemName)
+        solver = DWaveTSPSolver(distance_matrix_gr17,bestAnswer=bestAnswer,time_limit=time_limit,extraSuffix=extraSuffix,problemName=problemName)
 
         solution, distribution = solver.solve_tspDQMsolver()
         solver.printSorted()
@@ -376,18 +383,18 @@ for time_limit in times:
         plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}Histogram({time_limit}sec){extraSuffix}.png')
         plt.clf()
         
-print(bestAnswerErrors)
+# print(bestAnswerErrors)
 
-x = np.array([5.595,5.595,5.595,10,10,10,20,20,20,30,30,30,40,40,40])
-y = np.array(bestAnswerErrors)
-plt.plot(x, y,"ro")
-plt.show()
-plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}Plot.png')
-plt.clf()
+# x = np.array([5.595,5.595,5.595,10,10,10,20,20,20,30,30,30,40,40,40])
+# y = np.array(bestAnswerErrors)
+# plt.plot(x, y,"ro")
+# plt.show()
+# plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}Plot.png')
+# plt.clf()
 
-x = np.array([5.595,10,20,30,40])
-mean = [(bestAnswerErrors[(i*3)]+bestAnswerErrors[(i*3+1)]+bestAnswerErrors[(i*3+2)])/3 for i in range(5)]
-y = np.array(mean)
-plt.plot(x, y,"ro")
-plt.show()
-plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}MeanPlot.png')
+# x = np.array([5.595,10,20,30,40])
+# mean = [(bestAnswerErrors[(i*3)]+bestAnswerErrors[(i*3+1)]+bestAnswerErrors[(i*3+2)])/3 for i in range(5)]
+# y = np.array(mean)
+# plt.plot(x, y,"ro")
+# plt.show()
+# plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}MeanPlot.png')

@@ -1,1 +1,1 @@
-all time duration qpu access time = 0.015 sec
+all time duration = 0.015 sec

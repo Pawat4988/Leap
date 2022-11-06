@@ -190,7 +190,7 @@ class DWaveTSPSolver(object):
         for problemNumber, (solution,cost,energy) in enumerate(energyList):
             error = self.bestAnswer-cost
             self.save.addDataRowWithTime(problemNumber,solution,cost,error,energy,self.qpu_access_time,self.run_time)
-        self.save.saveDataToFile(f"cqm_{self.problemName}_{self.time_limit}sec{self.extraSuffix}")
+        self.save.saveDataToFileWithTime(f"cqm_{self.problemName}_{self.time_limit}sec{self.extraSuffix}")
         print("best solution found (solution(s) with lowest energy):")
         print("--------------------------")
         sortedCostList = sorted(self.solutions, key=lambda item: item[1])
@@ -328,15 +328,24 @@ distance_matrix_gr17 = [
 #     dist_matrix[x-1][y-1] = weight
 
 bestAnswerErrors = []
-times = [5,10,20,30,40]
-suffixes = ["","_2","_3"]
-problemName = "fri26"
-bestAnswer = 937
+# times = [5,10,20,30,40]
+times = [10,20,30,40]
+# times = [None]
+# suffixes = ["","_2","_3"]
+suffixes = ["_4","_5"]
+# suffixes = ["","_2","_3","_4","_5"]
+
+# problemName = "fri26"
+# bestAnswer = 937
+
+problemName = "gr17"
+bestAnswer = 2085
+
 solverName = "cqm"
 for time_limit in times:
     for extraSuffix in suffixes:
         print(time_limit,extraSuffix)
-        solver = DWaveTSPSolver(distance_matrix_fri26,bestAnswer=bestAnswer,time_limit=time_limit,extraSuffix=extraSuffix,problemName=problemName)
+        solver = DWaveTSPSolver(distance_matrix_gr17,bestAnswer=bestAnswer,time_limit=time_limit,extraSuffix=extraSuffix,problemName=problemName)
 
         solution, distribution = solver.solve_tspCQMsolver()
         solver.printSorted()
@@ -367,18 +376,20 @@ for time_limit in times:
         plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}Histogram({time_limit}sec){extraSuffix}.png')
         plt.clf()
 
-print(bestAnswerErrors)
 
-x = np.array([5,5,5,10,10,10,20,20,20,30,30,30,40,40,40])
-y = np.array(bestAnswerErrors)
-plt.plot(x, y,"ro")
-plt.show()
-plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}Plot.png')
-plt.clf()
 
-x = np.array([5,10,20,30,40])
-mean = [(bestAnswerErrors[(i*3)]+bestAnswerErrors[(i*3+1)]+bestAnswerErrors[(i*3+2)])/3 for i in range(5)]
-y = np.array(mean)
-plt.plot(x, y,"ro")
-plt.show()
-plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}MeanPlot.png')
+# print(bestAnswerErrors)
+
+# x = np.array([5,5,5,10,10,10,20,20,20,30,30,30,40,40,40])
+# y = np.array(bestAnswerErrors)
+# plt.plot(x, y,"ro")
+# plt.show()
+# plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}Plot.png')
+# plt.clf()
+
+# x = np.array([5,10,20,30,40])
+# mean = [(bestAnswerErrors[(i*3)]+bestAnswerErrors[(i*3+1)]+bestAnswerErrors[(i*3+2)])/3 for i in range(5)]
+# y = np.array(mean)
+# plt.plot(x, y,"ro")
+# plt.show()
+# plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}MeanPlot.png')
