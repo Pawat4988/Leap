@@ -1,28 +1,48 @@
 import random
 
 
-genProblem = []
+genProblem1 = []
+genProblem2 = []
 
-upperLimit = 5000
-for i in range(2):
-    eachSubsetTotal = 1000000
+upperLimit = 12000
+amountWanted = 900
+eachSubsetTotal = 5000000
+genNum = random.randint(1,upperLimit)
+while eachSubsetTotal > genNum:
+    if len(genProblem1) == (amountWanted/2)-1:
+        break
+    genProblem1.append(genNum)
+    eachSubsetTotal -= genNum
     genNum = random.randint(1,upperLimit)
-    while eachSubsetTotal > genNum:
-        genProblem.append(genNum)
-        eachSubsetTotal -= genNum
-        genNum = random.randint(1,upperLimit)
-    if eachSubsetTotal > 0:
-        genProblem.append(eachSubsetTotal)
-        
-print(genProblem)
-print(len(genProblem))
+if eachSubsetTotal > 0:
+    genProblem1.append(eachSubsetTotal)
+
+eachSubsetTotal = 5000000
+genNum = random.randint(1,upperLimit)
+while eachSubsetTotal > genNum:
+    if len(genProblem2) == (amountWanted/2)-1:
+        break
+    genProblem2.append(genNum)
+    eachSubsetTotal -= genNum
+    genNum = random.randint(1,upperLimit)
+if eachSubsetTotal > 0:
+    genProblem2.append(eachSubsetTotal)
 
 total = 0
-test = genProblem
-for num in test:
+final = genProblem1 + genProblem2
+for num in final:
     total+=num
+print("----------- set A ---------------")
+print(genProblem1)
+print(len(genProblem1))
+print(sum(genProblem1))
+print("----------- set B ---------------")
+print(genProblem2)
+print(len(genProblem2))
+print(sum(genProblem2))
 
 print(total)
+print(len(final))
 
 temp = [265, 4258, 3815, 2024, 3164, 1032, 1839, 1078, 4604, 1936, 2268, 1648, 72, 1191, 2574, 2079, 2939, 1060, 4989, 1796, 175, 4745, 1148, 3515, 2917, 3394, 86, 548, 
 3453, 2229, 1243, 1835, 736, 3375, 797, 2341, 1153, 2045, 1614, 2532, 3876, 1990, 4781, 1099, 1027, 1117, 482, 2031, 2170, 3190, 3452, 3349, 285, 3362, 2722, 3839, 1878, 754, 4143, 1521, 865, 3368, 3156, 1846, 3846, 1475, 4531, 3593, 2031, 2405, 1103, 3854, 584, 2345, 1279, 492, 3995, 1659, 3983, 2911, 1784, 2410, 1944, 4532, 427, 676, 4857, 13, 354, 2551, 1845, 1153, 2536, 2592, 2188, 3349, 1143, 2326, 4556, 3052, 1077, 2584, 2848, 336, 2294, 4296, 2015, 2008, 757, 1354, 3643, 788, 3479, 3119, 980, 3018, 3392, 2472, 162, 4036, 1314, 4478, 3676, 1943, 3390, 133, 3542, 4565, 4651, 3067, 4467, 2351, 972, 1548, 2550, 1626, 2648, 3904, 895, 3141, 1405, 3325, 4794, 4610, 2513, 3894, 3380, 176, 2409, 1495, 2186, 1816, 3358, 457, 2334, 4221, 483, 3851, 1703, 3425, 4936, 4440, 1893, 360, 2464, 1634, 2870, 4372, 213, 1737, 1280, 2963, 1055, 4329, 482, 1748, 4889, 2075, 2730, 2023, 223, 1171, 3990, 2346, 2616, 2408, 128, 2409, 1700, 1345, 2643, 353, 2128, 4161, 977, 1565, 3650, 3115, 1081, 1219, 4519, 548, 3705, 834, 2197, 5000, 2259, 4332, 2115, 3841, 1144, 2583, 3274, 2091, 3650, 4676, 4261, 3844, 3291, 3845, 200, 4779, 3453, 1884, 4298, 1774, 811, 3195, 2599, 4525, 2262, 3175, 2392, 1736, 781, 561, 1604, 3577, 3462, 330, 4336, 4532, 1468, 3544, 4639, 2866, 3036, 2987, 3611, 1545, 2372, 343, 4203, 2111, 4328, 389, 2883, 4026, 4314, 737, 3452, 4002, 2610, 2620, 2312, 176, 4627, 3025, 4911, 4468, 1702, 1897, 4504, 2116, 2708, 4640, 1327, 4486, 
