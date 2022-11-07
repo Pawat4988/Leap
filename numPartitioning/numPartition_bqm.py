@@ -10,43 +10,46 @@ from hybrid.utils import sample_as_dict
 import time
 from collect import Collect
 collect = Collect()
-
+import pickle
 import random
 
 
-random.seed(2)
+# random.seed(2)
 
-genProblem1 = []
-genProblem2 = []
+# genProblem1 = []
+# genProblem2 = []
 
-upperLimit = 40
+# upperLimit = 40
 amountWanted = 10_000
-eachSubsetTotal = 56_924_917
-genNum = random.randint(1,upperLimit)
-while eachSubsetTotal > genNum:
-    if len(genProblem1) == (amountWanted/2)-1:
-        break
-    genProblem1.append(genNum)
-    eachSubsetTotal -= genNum
-    genNum = random.randint(1,upperLimit)
-if eachSubsetTotal > 0:
-    genProblem1.append(eachSubsetTotal)
+# eachSubsetTotal = 56_924_917
+# genNum = random.randint(1,upperLimit)
+# while eachSubsetTotal > genNum:
+#     if len(genProblem1) == (amountWanted/2)-1:
+#         break
+#     genProblem1.append(genNum)
+#     eachSubsetTotal -= genNum
+#     genNum = random.randint(1,upperLimit)
+# if eachSubsetTotal > 0:
+#     genProblem1.append(eachSubsetTotal)
 
-eachSubsetTotal = 56_924_917
-genNum = random.randint(1,upperLimit)
-while eachSubsetTotal > genNum:
-    if len(genProblem2) == (amountWanted/2)-1:
-        break
-    genProblem2.append(genNum)
-    eachSubsetTotal -= genNum
-    genNum = random.randint(1,upperLimit)
-if eachSubsetTotal > 0:
-    genProblem2.append(eachSubsetTotal)
+# eachSubsetTotal = 56_924_917
+# genNum = random.randint(1,upperLimit)
+# while eachSubsetTotal > genNum:
+#     if len(genProblem2) == (amountWanted/2)-1:
+#         break
+#     genProblem2.append(genNum)
+#     eachSubsetTotal -= genNum
+#     genNum = random.randint(1,upperLimit)
+# if eachSubsetTotal > 0:
+#     genProblem2.append(eachSubsetTotal)
 
-final = genProblem1 + genProblem2
+# final = genProblem1 + genProblem2
 
-print(len(final))
-print(sum(final))
+# print(len(final))
+# print(sum(final))
+
+with open (f'problemWith{amountWanted}Num', 'rb') as fp:
+    final = pickle.load(fp)
 
 sets = [
         # [25, 7, 13, 31, 42, 17, 21, 10],
