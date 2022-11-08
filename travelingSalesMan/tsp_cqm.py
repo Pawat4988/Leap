@@ -329,11 +329,14 @@ distance_matrix_gr17 = [
 
 bestAnswerErrors = []
 # times = [5,10,20,30,40]
-times = [10,20,30,40]
+# times = [10,20,30,40]
+times = [None,10,20,30,40]
 # times = [None]
 # suffixes = ["","_2","_3"]
-suffixes = ["_4","_5"]
+# suffixes = ["_4","_5"]
 # suffixes = ["","_2","_3","_4","_5"]
+# suffixes = ["","_2","_3","_4","_5","_6","_7"]
+suffixes = ["_6","_7"]
 
 # problemName = "fri26"
 # bestAnswer = 937

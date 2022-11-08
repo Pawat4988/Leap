@@ -12,44 +12,48 @@ from collect import Collect
 collect = Collect()
 import pickle
 import random
+from dimod import ExactSolver
 
 
-# random.seed(2)
+random.seed(2)
 
-# genProblem1 = []
-# genProblem2 = []
+genProblem1 = []
+genProblem2 = []
 
-# upperLimit = 40
-amountWanted = 10_000
-# eachSubsetTotal = 56_924_917
-# genNum = random.randint(1,upperLimit)
-# while eachSubsetTotal > genNum:
-#     if len(genProblem1) == (amountWanted/2)-1:
-#         break
-#     genProblem1.append(genNum)
-#     eachSubsetTotal -= genNum
-#     genNum = random.randint(1,upperLimit)
-# if eachSubsetTotal > 0:
-#     genProblem1.append(eachSubsetTotal)
+upperLimit = 4000
+amountWanted = 5000
+constantTotal = 5_924_917
+eachSubsetTotal = constantTotal
+genNum = random.randint(1,upperLimit)
+while eachSubsetTotal > genNum:
+    if len(genProblem1) == (amountWanted/2)-1:
+        break
+    genProblem1.append(genNum)
+    eachSubsetTotal -= genNum
+    genNum = random.randint(1,upperLimit)
+if eachSubsetTotal > 0:
+    genProblem1.append(eachSubsetTotal)
 
-# eachSubsetTotal = 56_924_917
-# genNum = random.randint(1,upperLimit)
-# while eachSubsetTotal > genNum:
-#     if len(genProblem2) == (amountWanted/2)-1:
-#         break
-#     genProblem2.append(genNum)
-#     eachSubsetTotal -= genNum
-#     genNum = random.randint(1,upperLimit)
-# if eachSubsetTotal > 0:
-#     genProblem2.append(eachSubsetTotal)
+eachSubsetTotal = constantTotal
+genNum = random.randint(1,upperLimit)
+while eachSubsetTotal > genNum:
+    if len(genProblem2) == (amountWanted/2)-1:
+        break
+    genProblem2.append(genNum)
+    eachSubsetTotal -= genNum
+    genNum = random.randint(1,upperLimit)
+if eachSubsetTotal > 0:
+    genProblem2.append(eachSubsetTotal)
 
-# final = genProblem1 + genProblem2
+final = genProblem1 + genProblem2
 
-# print(len(final))
-# print(sum(final))
+# with open (f'problemWith{amountWanted}Num', 'rb') as fp:
+#     final = pickle.load(fp)
 
-with open (f'problemWith{amountWanted}Num', 'rb') as fp:
-    final = pickle.load(fp)
+print(len(final))
+print(sum(final))
+
+
 
 sets = [
         # [25, 7, 13, 31, 42, 17, 21, 10],
@@ -89,8 +93,9 @@ sets = [
         final
         ]
 # set = [3,1,1,2,2,1]
-sampler = LeapHybridBQMSampler()
 
+
+sampler = LeapHybridBQMSampler()
 # ----Loop here----
 for problemNo, set in enumerate(sets):
     c = 0
@@ -107,6 +112,7 @@ for problemNo, set in enumerate(sets):
     # calculate here
     # response = sampler.sample_qubo(Q,time_limit=6)
     response = sampler.sample_qubo(Q)
+    # response = ExactSolver().sample_qubo(Q)
 
     timimgInfo = response.info
     qpu_access_time = timimgInfo["qpu_access_time"]

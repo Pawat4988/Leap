@@ -337,11 +337,13 @@ distance_matrix_4x4 = [ [0,4,1,3],
 
 bestAnswerErrors = []
 # times = [5.595,10,20,30,40]
-times = [None,10,20,30,40]
+# times = [None,10,20,30,40]
+times = [40]
 # times = [None]
 # suffixes = ["","_2","_3"]
 # suffixes = ["_4","_5"]
-suffixes = ["_6","_7"]
+# suffixes = ["_6","_7"]
+suffixes = ["_7"]
 
 # problemName = "fri26"
 # bestAnswer = 937

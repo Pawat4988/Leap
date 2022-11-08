@@ -29,7 +29,7 @@ for time_limit in times:
 
 # bestAnswerErrors = [-1230, -1579, -1210, -1593, -1403, -1186, -1344, -1301, -1133, -1327, -1243, -1207, -1364, -1202, -1171]
 # x = np.array([5,5,5,5,5,10,10,10,10,10,20,20,20,20,20,30,30,30,30,30,40,40,40,40,40])
-x = np.array([5,5,5,5,5,5,5,10,10,10,10,10,10,10,20,20,20,20,20,20,20,30,30,30,30,30,30,30,40,40,40,40,40,40])
+x = np.array([5,5,5,5,5,5,5,10,10,10,10,10,10,10,20,20,20,20,20,20,20,30,30,30,30,30,30,30,40,40,40,40,40,40,40])
 y = np.array(bestAnswerErrors)
 plt.plot(x, y,"ro")
 plt.show()
@@ -39,10 +39,7 @@ plt.clf()
 mean = []
 x = np.array([5,10,20,30,40])
 for i in range(5):
-    if i == 4:
-        mean.append((bestAnswerErrors[(i*7)]+bestAnswerErrors[(i*7+1)]+bestAnswerErrors[(i*7+2)]+bestAnswerErrors[(i*7+3)]+bestAnswerErrors[(i*7+4)]+bestAnswerErrors[(i*7+5)])/6)
-    else:
-        mean.append((bestAnswerErrors[(i*7)]+bestAnswerErrors[(i*7+1)]+bestAnswerErrors[(i*7+2)]+bestAnswerErrors[(i*7+3)]+bestAnswerErrors[(i*7+4)]+bestAnswerErrors[(i*7+5)]+bestAnswerErrors[(i*7+6)])/7)
+    mean.append((bestAnswerErrors[(i*7)]+bestAnswerErrors[(i*7+1)]+bestAnswerErrors[(i*7+2)]+bestAnswerErrors[(i*7+3)]+bestAnswerErrors[(i*7+4)]+bestAnswerErrors[(i*7+5)]+bestAnswerErrors[(i*7+6)])/7)
 
 y = np.array(mean)
 plt.plot(x, y,"ro")

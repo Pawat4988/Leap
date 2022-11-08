@@ -21,8 +21,10 @@ class Save():
         self.savedAt = fileName+".xlsx"
         df = pd.DataFrame(numpy.array(self.dataRows,dtype=object), columns=self.columnName)
         df.to_excel(f"travelingSalesMan/data/{fileName}.xlsx")
+        self.dataRows = []
 
     def saveDataToFileWithTime(self,fileName):
         self.savedAt = fileName+".xlsx"
         df = pd.DataFrame(numpy.array(self.dataRowsWithTime,dtype=object), columns=self.columnNameWithTime)
         df.to_excel(f"travelingSalesMan/data/{fileName}.xlsx")
+        self.dataRowsWithTime = []
