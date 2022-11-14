@@ -6,11 +6,14 @@ import statistics
 bestAnswerErrors = []
 
 times = [10,20,30,40]
+# times = [10]
 suffixes = ["","_2","_3","_4","_5","_6","_7"]
 
-problemName = "gr17"
-solverName = "cqm"
-
+# problemName = "gr17"
+problemName = "fri26"
+# solverName = "dqm"
+# solverName = "cqm"
+solverName = "bqm"
 # for time_limit in times:
 #     for extraSuffix in suffixes:
 #         print(time_limit,extraSuffix)
@@ -83,5 +86,5 @@ for targetTimeConstant in times:
     # plt.grid(True)
 
     plt.savefig(f'travelingSalesMan/performance/{solverName}_{problemName}HistogramCompare{targetTimeConstant}sec.png')
-    plt.show()
+    # plt.show()
     # plt.clf()

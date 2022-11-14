@@ -123,7 +123,7 @@ class DWaveTSPSolver(object):
     def solve_tspCQMsolver(self):
         cqm = ConstrainedQuadraticModel.from_bqm(BinaryQuadraticModel.from_qubo(self.qubo_dict))
 
-        sampler = LeapHybridCQMSampler()
+        sampler = LeapHybridCQMSampler(token=self.sapi_token)
         if self.time_limit:
             response = sampler.sample_cqm(cqm,time_limit=self.time_limit)
             timimgInfo = response.info
@@ -332,23 +332,27 @@ bestAnswerErrors = []
 # times = [10,20,30,40]
 times = [None,10,20,30,40]
 # times = [None]
+# times = [None]
 # suffixes = ["","_2","_3"]
 # suffixes = ["_4","_5"]
 # suffixes = ["","_2","_3","_4","_5"]
-# suffixes = ["","_2","_3","_4","_5","_6","_7"]
-suffixes = ["_6","_7"]
+suffixes = ["","_2","_3","_4","_5","_6","_7"]
+# suffixes = ["_5","_6","_7"]
 
-# problemName = "fri26"
-# bestAnswer = 937
+problemName = "fri26"
+bestAnswer = 937
 
-problemName = "gr17"
-bestAnswer = 2085
+# problemName = "gr17"
+# bestAnswer = 2085
 
 solverName = "cqm"
+# token = "DEV-7a1b7a0b8bc7b53815f4688371ab4489f88c8ca3"
+token = "DEV-6d63d718aeccc25533994a5b7eb26fb16d73246d"
+
 for time_limit in times:
     for extraSuffix in suffixes:
         print(time_limit,extraSuffix)
-        solver = DWaveTSPSolver(distance_matrix_gr17,bestAnswer=bestAnswer,time_limit=time_limit,extraSuffix=extraSuffix,problemName=problemName)
+        solver = DWaveTSPSolver(distance_matrix_fri26,bestAnswer=bestAnswer,time_limit=time_limit,extraSuffix=extraSuffix,problemName=problemName,sapi_token=token)
 
         solution, distribution = solver.solve_tspCQMsolver()
         solver.printSorted()
@@ -374,7 +378,7 @@ for time_limit in times:
         plt.xlim(mean-(sigma*4), mean+(sigma*4))
         # plt.ylim(0, 1)
         plt.grid(True)
-        plt.show()
+        # plt.show()
 
         plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}Histogram({time_limit}sec){extraSuffix}.png')
         plt.clf()

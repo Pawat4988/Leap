@@ -124,7 +124,7 @@ class DWaveTSPSolver(object):
     #     return self.solution, self.distribution
 
     def solve_tspBQMsolver(self):
-        sampler = LeapHybridBQMSampler()
+        sampler = LeapHybridBQMSampler(token=self.sapi_token)
 
         if self.time_limit:
             response = sampler.sample_qubo(self.qubo_dict,time_limit=self.time_limit)
@@ -365,25 +365,33 @@ bestAnswerErrors = []
 qpuTime = []
 runTime = []
 # times = [10,20,30,40]
-times = [None]
-# suffixes = ["","_2","_3","_4","_5","_6","_7"]
+# times = [None,10,20,30,40]
+# times = [20,30,40]
+# times = [None,10]
+# times = [None]
+times = [40]
+suffixes = ["","_2","_3","_4","_5","_6","_7"]
 # suffixes = ["_2","_3","_4","_5","_6","_7"]
 # suffixes = ["_4","_5"]
-suffixes = [""]
-
-# problemName = "fri26"
-# bestAnswer = 937
-
-problemName = "gr17"
+# suffixes = [""]
+# suffixes = ["_7"]
 # problemName = "test2"
-bestAnswer = 2085
+
+problemName = "fri26"
+bestAnswer = 937
+
+# problemName = "gr17"
+# bestAnswer = 2085
 
 solverName = "bqm"
+# token = "DEV-7a1b7a0b8bc7b53815f4688371ab4489f88c8ca3"
+# token = "DEV-6d63d718aeccc25533994a5b7eb26fb16d73246d"
+token = "DEV-acf6775961b37ef9d16fb8dba3164d4f9cccaa3f"
 
 for time_limit in times:
     for extraSuffix in suffixes:
         print(time_limit,extraSuffix)
-        solver = DWaveTSPSolver(distance_matrix_gr17,time_limit=time_limit,bestAnswer=bestAnswer)
+        solver = DWaveTSPSolver(distance_matrix_fri26,time_limit=time_limit,bestAnswer=bestAnswer,sapi_token=token)
         solution, distribution = solver.solve_tspBQMsolver()
         solver.printSorted()
         bestAnswerErrors.append(solver.bestAnswerError)

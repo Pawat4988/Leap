@@ -149,7 +149,7 @@ class DWaveTSPSolver(object):
         return self.solution, self.distribution
     
     def solve_tspDQMsolver(self):
-        sampler = LeapHybridDQMSampler()
+        sampler = LeapHybridDQMSampler(token=self.sapi_token)
 
         if self.time_limit:
             response = sampler.sample_dqm(dqm,time_limit=self.time_limit)
@@ -337,26 +337,29 @@ distance_matrix_4x4 = [ [0,4,1,3],
 
 bestAnswerErrors = []
 # times = [5.595,10,20,30,40]
-# times = [None,10,20,30,40]
+# times = [10,20,30,40]
 times = [40]
 # times = [None]
 # suffixes = ["","_2","_3"]
-# suffixes = ["_4","_5"]
+# suffixes = ["_4","_5","_6","_7"]
+# suffixes = ["","_2","_3","_4","_5","_6","_7"]
 # suffixes = ["_6","_7"]
 suffixes = ["_7"]
 
-# problemName = "fri26"
-# bestAnswer = 937
+problemName = "fri26"
+bestAnswer = 937
 
-problemName = "gr17"
-bestAnswer = 2085
+# problemName = "gr17"
+# bestAnswer = 2085
 
 solverName = "dqm"
+# token = "DEV-7a1b7a0b8bc7b53815f4688371ab4489f88c8ca3"
+token = "DEV-6d63d718aeccc25533994a5b7eb26fb16d73246d"
 for time_limit in times:
     for extraSuffix in suffixes:
         print(time_limit,extraSuffix)
         dqm = DiscreteQuadraticModel()
-        solver = DWaveTSPSolver(distance_matrix_gr17,bestAnswer=bestAnswer,time_limit=time_limit,extraSuffix=extraSuffix,problemName=problemName)
+        solver = DWaveTSPSolver(distance_matrix_fri26,bestAnswer=bestAnswer,time_limit=time_limit,extraSuffix=extraSuffix,problemName=problemName,sapi_token=token)
 
         solution, distribution = solver.solve_tspDQMsolver()
         solver.printSorted()
@@ -382,7 +385,7 @@ for time_limit in times:
         plt.xlim(mean-(sigma*4), mean+(sigma*4))
         # plt.ylim(0, 1)
         plt.grid(True)
-        plt.show()
+        # plt.show()
 
         plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}Histogram({time_limit}sec){extraSuffix}.png')
         plt.clf()
