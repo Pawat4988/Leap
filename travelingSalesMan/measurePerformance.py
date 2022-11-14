@@ -9,11 +9,11 @@ times = [10,20,30,40]
 # times = [10]
 suffixes = ["","_2","_3","_4","_5","_6","_7"]
 
-# problemName = "gr17"
-problemName = "fri26"
-# solverName = "dqm"
+problemName = "gr17"
+# problemName = "fri26"
+solverName = "dqm2"
 # solverName = "cqm"
-solverName = "bqm"
+# solverName = "bqm"
 # for time_limit in times:
 #     for extraSuffix in suffixes:
 #         print(time_limit,extraSuffix)
@@ -45,6 +45,8 @@ for targetTimeConstant in times:
     print(targetTimes)
 
     performanceIncrease = []
+    # defaultTimes = [-951, -973, -942, -977, -531, -1017, -617,-607, -768, -875, -940, -1074, -658, -675]
+    # targetTimes = [-815, -817, -671, -827, -766, -673, -781,-987, -758, -570, -649, -893, -768, -758] 
 
     # defaultTimes = [-1000]
     # targetTimes = [-500]
@@ -55,7 +57,6 @@ for targetTimeConstant in times:
     print(performanceIncrease)
     print(len(performanceIncrease))
 
-
     mean = sum(performanceIncrease)/len(performanceIncrease)
     sigma = statistics.stdev(performanceIncrease)
     print(f"error mean: {mean}")
@@ -63,6 +64,7 @@ for targetTimeConstant in times:
 
     f, ax = plt.subplots()
     n, bins, patches = plt.hist(performanceIncrease, facecolor='g',bins = [-100 + n for n in range(10,200,10)])
+    # n, bins, patches = plt.bar(performanceIncrease)
 
     for bar in ax.containers[0]:
         # get x midpoint of bar
@@ -75,6 +77,8 @@ for targetTimeConstant in times:
             bar.set_color('yellow')
         else:
             bar.set_color('green')
+
+    plt.bar_label(patches, fontsize=20, color='navy')
 
     plt.xlabel('percentage improvement')
     # plt.ylabel('amount')

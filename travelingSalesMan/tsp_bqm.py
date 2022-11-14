@@ -47,7 +47,7 @@ class DWaveTSPSolver(object):
     Class for solving Travelling Salesman Problem using DWave.
     Specifying starting point is not implemented.
     """
-    def __init__(self, distance_matrix, sapi_token=None, url=None,bestAnswer=None,time_limit=None,extraSuffix=''):
+    def __init__(self, distance_matrix, sapi_token=None, url=None,bestAnswer=None,time_limit=None,extraSuffix='',solverName = None):
 
         max_distance = np.max(np.array(distance_matrix))
         self.notScaledDistance_matrix = distance_matrix
@@ -70,6 +70,7 @@ class DWaveTSPSolver(object):
         self.bestAnswerError = None
         self.qpu_access_time = None
         self.run_time = None
+        self.solverName = solverName
 
     # edge weight
     def add_cost_objective(self):
@@ -386,18 +387,19 @@ bestAnswer = 937
 solverName = "bqm"
 # token = "DEV-7a1b7a0b8bc7b53815f4688371ab4489f88c8ca3"
 # token = "DEV-6d63d718aeccc25533994a5b7eb26fb16d73246d"
-token = "DEV-acf6775961b37ef9d16fb8dba3164d4f9cccaa3f"
+# token = "DEV-acf6775961b37ef9d16fb8dba3164d4f9cccaa3f"
+token = "DEV-ae1b69225d1c7309a2553ba26a9af8d80732722c"
 
 for time_limit in times:
     for extraSuffix in suffixes:
         print(time_limit,extraSuffix)
-        solver = DWaveTSPSolver(distance_matrix_fri26,time_limit=time_limit,bestAnswer=bestAnswer,sapi_token=token)
+        solver = DWaveTSPSolver(distance_matrix_fri26,time_limit=time_limit,bestAnswer=bestAnswer,sapi_token=token,solverName=solverName)
         solution, distribution = solver.solve_tspBQMsolver()
         solver.printSorted()
         bestAnswerErrors.append(solver.bestAnswerError)
         qpuTime.append(solver.qpu_access_time)
         runTime.append(solver.run_time)
-        fileName = f"bqm_{problemName}_{time_limit}sec{extraSuffix}"
+        fileName = f"{solverName}_{problemName}_{time_limit}sec{extraSuffix}"
         save.saveDataToFileWithTime(fileName)
 
 print(bestAnswerErrors)

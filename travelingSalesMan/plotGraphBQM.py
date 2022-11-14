@@ -1,5 +1,6 @@
 import numpy as np
 from matplotlib import pyplot as plt
+import pandas as pd
 
 # gr17
 # [-971, -971, -1181, -1026, -1053, -1049, -1037, -908, -1159, -927, -705, -1028, -924, -723, -957]
@@ -15,22 +16,42 @@ from matplotlib import pyplot as plt
 #  [-1122, -1129, -2627, -2808, -1522,]
 # [84797, 84771, 114102, 153305, 152381]
 # [4993817, 4981131, 4991694, 4982388, 5001095,]
+bestAnswerErrors = []
 
+times = [None,10,20,30,40]
+# times = [None,10]
+suffixes = ["","_2","_3","_4","_5","_6","_7"]
 
-solverName = "bqm"
 problemName = "gr17"
+# problemName = "fri26"
+# solverName = "cqm2"
+solverName = "bqm"
 
-bestAnswerErrors = [-2807, -2567, -3067, -2045, -1024, -1959, -2276, -2279, -2593, -2490, -1897, -1895, -2782, -1617, -1866, -2258, -3002, -2090, -2350, -2269, -2178, -2383, -1782, -1686, -2157]
-x = np.array([5,5,5,5,5,10,10,10,10,10,20,20,20,20,20,30,30,30,30,30,40,40,40,40,40])
+for time_limit in times:
+    for extraSuffix in suffixes:
+        df = pd.read_excel(f"travelingSalesMan/data/{solverName}_{problemName}_{time_limit}sec{extraSuffix}.xlsx")
+        # print(df)
+        error = df.loc[0,["Error"]]
+        bestAnswerErrors.append(int(error))
+
+
+# bestAnswerErrors = [-2807, -2567, -3067, -2045, -1024, -1959, -2276, -2279, -2593, -2490, -1897, -1895, -2782, -1617, -1866, -2258, -3002, -2090, -2350, -2269, -2178, -2383, -1782, -1686, -2157]
+# x = np.array([5,5,5,5,5,10,10,10,10,10,20,20,20,20,20,30,30,30,30,30,40,40,40,40,40])
+x = np.array([5,5,5,5,5,5,5,10,10,10,10,10,10,10,20,20,20,20,20,20,20,30,30,30,30,30,30,30,40,40,40,40,40,40,40])
 y = np.array(bestAnswerErrors)
 plt.plot(x, y,"ro")
-plt.show()
 plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}Plot2.png')
+plt.show()
 plt.clf()
 
 x = np.array([5,10,20,30,40])
-mean = [(bestAnswerErrors[(i*3)]+bestAnswerErrors[(i*3+1)]+bestAnswerErrors[(i*3+2)])/3 for i in range(5)]
+# mean = [(bestAnswerErrors[(i*3)]+bestAnswerErrors[(i*3+1)]+bestAnswerErrors[(i*3+2)])/3 for i in range(5)]
+# mean = [(bestAnswerErrors[(i*5)]+bestAnswerErrors[(i*5+1)]+bestAnswerErrors[(i*5+2)]+bestAnswerErrors[(i*5+3)]+bestAnswerErrors[(i*5+4)])/5 for i in range(5)]
+mean = []
+for i in range(5):
+    mean.append((bestAnswerErrors[(i*7)]+bestAnswerErrors[(i*7+1)]+bestAnswerErrors[(i*7+2)]+bestAnswerErrors[(i*7+3)]+bestAnswerErrors[(i*7+4)]+bestAnswerErrors[(i*7+5)]+bestAnswerErrors[(i*7+6)])/7)
+
 y = np.array(mean)
 plt.plot(x, y,"ro")
-plt.show()
 plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}MeanPlot2.png')
+plt.show()

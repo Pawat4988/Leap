@@ -41,7 +41,7 @@ class DWaveTSPSolver(object):
     Class for solving Travelling Salesman Problem using DWave.
     Specifying starting point is not implemented.
     """
-    def __init__(self, distance_matrix, sapi_token=None, url=None,bestAnswer=None,time_limit=None,extraSuffix='',problemName=None):
+    def __init__(self, distance_matrix, sapi_token=None, url=None,bestAnswer=None,time_limit=None,extraSuffix='',problemName=None,solverName=None):
 
         max_distance = np.max(np.array(distance_matrix))
         self.notScaledDistance_matrix = distance_matrix
@@ -65,6 +65,7 @@ class DWaveTSPSolver(object):
         self.extraSuffix = extraSuffix
         self.bestAnswerError = None
         self.problemName = problemName
+        self.solverName = solverName
 
     def add_variable(self):
         n = len(self.distance_matrix)
@@ -204,7 +205,7 @@ class DWaveTSPSolver(object):
         for problemNumber, (solution,cost,energy) in enumerate(energyList):
             error = self.bestAnswer-cost
             self.save.addDataRowWithTime(problemNumber,solution,cost,error,energy,self.qpu_access_time,self.run_time)
-        self.save.saveDataToFileWithTime(f"dqm_{self.problemName}_{self.time_limit}sec{self.extraSuffix}")
+        self.save.saveDataToFileWithTime(f"{self.solverName}_{self.problemName}_{self.time_limit}sec{self.extraSuffix}")
         print("best solution found (solution(s) with lowest energy):")
         print("--------------------------")
         sortedCostList = sorted(self.solutions, key=lambda item: item[1])
@@ -337,29 +338,35 @@ distance_matrix_4x4 = [ [0,4,1,3],
 
 bestAnswerErrors = []
 # times = [5.595,10,20,30,40]
-# times = [10,20,30,40]
+# times = [20,30,40]
 times = [40]
 # times = [None]
+# times = [None,10]
 # suffixes = ["","_2","_3"]
 # suffixes = ["_4","_5","_6","_7"]
 # suffixes = ["","_2","_3","_4","_5","_6","_7"]
+# suffixes = ["_5","_6","_7"]
 # suffixes = ["_6","_7"]
 suffixes = ["_7"]
 
-problemName = "fri26"
-bestAnswer = 937
+# problemName = "fri26"
+# bestAnswer = 937
 
-# problemName = "gr17"
-# bestAnswer = 2085
+problemName = "gr17"
+bestAnswer = 2085
 
-solverName = "dqm"
+solverName = "dqm2"
 # token = "DEV-7a1b7a0b8bc7b53815f4688371ab4489f88c8ca3"
-token = "DEV-6d63d718aeccc25533994a5b7eb26fb16d73246d"
+# token = "DEV-6d63d718aeccc25533994a5b7eb26fb16d73246d"
+# token = "DEV-acf6775961b37ef9d16fb8dba3164d4f9cccaa3f"
+token = "DEV-ae1b69225d1c7309a2553ba26a9af8d80732722c"
+
+
 for time_limit in times:
     for extraSuffix in suffixes:
         print(time_limit,extraSuffix)
         dqm = DiscreteQuadraticModel()
-        solver = DWaveTSPSolver(distance_matrix_fri26,bestAnswer=bestAnswer,time_limit=time_limit,extraSuffix=extraSuffix,problemName=problemName,sapi_token=token)
+        solver = DWaveTSPSolver(distance_matrix_gr17,bestAnswer=bestAnswer,time_limit=time_limit,extraSuffix=extraSuffix,problemName=problemName,sapi_token=token,solverName=solverName)
 
         solution, distribution = solver.solve_tspDQMsolver()
         solver.printSorted()

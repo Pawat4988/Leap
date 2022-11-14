@@ -1,14 +1,16 @@
 import numpy as np
 from matplotlib import pyplot as plt
 import pandas as pd
+import math
 
 bestAnswerErrors = []
 
 times = [None,10,20,30,40]
-suffixes = ["","_2","_3","_4","_5"]
+# times = [None,10]
+suffixes = ["","_2","_3","_4","_5","_6","_7"]
 
 problemName = "gr17"
-solverName = "cqm"
+solverName = "cqm2"
 
 for time_limit in times:
     for extraSuffix in suffixes:
@@ -29,23 +31,27 @@ for time_limit in times:
 # fri26
 # [-1093, -762, -995, -947, -1000, -967, -905, -899, -892, -868, -816, -767, -917, -892, -806]
 
-solverName = "cqm"
-# problemName = "fri26"
-problemName = "gr17"
+# solverName = "cqm"
+# # problemName = "fri26"
+# problemName = "gr17"
 
-
+extraSuffix="new"
 # bestAnswerErrors = [-1093, -762, -995, -947, -1000, -967, -905, -899, -892, -868, -816, -767, -917, -892, -806]
-x = np.array([5,5,5,5,5,10,10,10,10,10,20,20,20,20,20,30,30,30,30,30,40,40,40,40,40])
+x = np.array([5,5,5,5,5,5,5,10,10,10,10,10,10,10,20,20,20,20,20,20,20,30,30,30,30,30,30,30,40,40,40,40,40,40,40])
 y = np.array(bestAnswerErrors)
 plt.plot(x, y,"ro")
 plt.show()
-plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}Plot2.png')
+plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}Plot{extraSuffix}.png')
 plt.clf()
 
 x = np.array([5,10,20,30,40])
-mean = [(bestAnswerErrors[(i*5)]+bestAnswerErrors[(i*5+1)]+bestAnswerErrors[(i*5+2)]+bestAnswerErrors[(i*5+3)]+bestAnswerErrors[(i*5+4)])/5 for i in range(5)]
+# mean = [(bestAnswerErrors[(i*5)]+bestAnswerErrors[(i*5+1)]+bestAnswerErrors[(i*5+2)]+bestAnswerErrors[(i*5+3)]+bestAnswerErrors[(i*5+4)])/5 for i in range(5)]
+mean = []
+for i in range(5):
+    mean.append((bestAnswerErrors[(i*7)]+bestAnswerErrors[(i*7+1)]+bestAnswerErrors[(i*7+2)]+bestAnswerErrors[(i*7+3)]+bestAnswerErrors[(i*7+4)]+bestAnswerErrors[(i*7+5)]+bestAnswerErrors[(i*7+6)])/7)
+
 print(mean)
 y = np.array(mean)
 plt.plot(x, y,"ro")
+plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}MeanPlot{extraSuffix}.png')
 plt.show()
-plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}MeanPlot2.png')
