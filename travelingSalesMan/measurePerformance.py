@@ -9,9 +9,10 @@ times = [10,20,30,40]
 # times = [10]
 suffixes = ["","_2","_3","_4","_5","_6","_7"]
 
-problemName = "gr17"
-# problemName = "fri26"
-solverName = "dqm2"
+# problemName = "gr17"
+problemName = "fri26"
+# solverName = "dqm2"
+solverName = "dqm"
 # solverName = "cqm"
 # solverName = "bqm"
 # for time_limit in times:
@@ -30,6 +31,8 @@ defaultTimes = []
 for extraSuffix in suffixes:
     df = pd.read_excel(f"travelingSalesMan/data/{solverName}_{problemName}_Nonesec{extraSuffix}.xlsx")
     error = df.loc[0,["Error"]]
+    defaultTimeConstant = int(df.loc[0,["run_time"]])/1_000_000
+
     defaultTimes.append(int(error))
 # defaultTimes = np.array(defaultTimes,dtype=int)
 print(defaultTimes)
@@ -63,7 +66,8 @@ for targetTimeConstant in times:
     print(f"error SD: {sigma}")
 
     f, ax = plt.subplots()
-    n, bins, patches = plt.hist(performanceIncrease, facecolor='g',bins = [-100 + n for n in range(10,200,10)])
+    # n, bins, patches = plt.hist(performanceIncrease, facecolor='g',bins = [-100 + n for n in range(10,200,5)])
+    n, bins, patches = plt.hist(performanceIncrease, facecolor='g')
     # n, bins, patches = plt.bar(performanceIncrease)
 
     for bar in ax.containers[0]:
@@ -77,18 +81,19 @@ for targetTimeConstant in times:
             bar.set_color('yellow')
         else:
             bar.set_color('green')
+    print(patches)
 
-    plt.bar_label(patches, fontsize=20, color='navy')
+    plt.bar_label(patches, fontsize=10, color='navy')
 
     plt.xlabel('percentage improvement')
     # plt.ylabel('amount')
-    plt.title(f'{solverName}_{problemName} compare default with {targetTimeConstant} sec')
+    plt.title(f'{solverName}_{problemName} compare default with {targetTimeConstant} sec, AvgEffGainPerSec: {mean/(targetTimeConstant-defaultTimeConstant):.3f}%')
     # plt.text(0.1, 0.9, f'$\mu={mean:.2f},\ \sigma={sigma:.2f}$')
     plt.text(.01, .99, f'$\mu$={mean:.2f}%, $\sigma$={sigma:.2f}                                  max={max(performanceIncrease):.2f}%, min={min(performanceIncrease):.2f}%', ha='left', va='top', transform=ax.transAxes)
     plt.xlim(mean-(sigma*4), mean+(sigma*4))
     # plt.ylim(0, 1)
     # plt.grid(True)
 
-    plt.savefig(f'travelingSalesMan/performance/{solverName}_{problemName}HistogramCompare{targetTimeConstant}sec.png')
+    plt.savefig(f'travelingSalesMan/performance+score/{solverName}_{problemName}HistogramCompare{targetTimeConstant}sec+effScore.png')
     # plt.show()
     # plt.clf()

@@ -52,6 +52,7 @@ class DWaveTSPSolver(object):
         max_distance = np.max(np.array(distance_matrix))
         self.notScaledDistance_matrix = distance_matrix
         scaled_distance_matrix = distance_matrix / max_distance
+        # scaled_distance_matrix = distance_matrix / np.int32(10)
         self.distance_matrix = scaled_distance_matrix
         self.constraint_constant = 400
         self.cost_constant = 10
@@ -72,7 +73,6 @@ class DWaveTSPSolver(object):
         self.run_time = None
         self.solverName = solverName
 
-    # edge weight
     def add_cost_objective(self):
         n = len(self.distance_matrix)
         for t in range(n):
@@ -83,9 +83,6 @@ class DWaveTSPSolver(object):
                     qubit_a = t * n + i
                     qubit_b = (t + 1)%n * n + j
                     self.qubo_dict[(qubit_a, qubit_b)] = self.cost_constant * self.distance_matrix[i][j]
-        # print("add cost objective")
-        # print(self.qubo_dict)
-        # print("----------------")
 
 
     def add_time_constraints(self):
@@ -101,7 +98,6 @@ class DWaveTSPSolver(object):
                     qubit_b = t * n + j
                     if i!=j:
                         self.qubo_dict[(qubit_a, qubit_b)] = 2 * self.constraint_constant
-        # print(self.qubo_dict)
 
 
     def add_position_constraints(self):
@@ -158,10 +154,11 @@ class DWaveTSPSolver(object):
         # n = len(self.distance_matrix)
         distribution = {}
         min_energy = response.record[0].energy
-
+        print("----------Raw solution----------")
         for record in response.record:
             sample = record[0]
-            solution_binary = [node for node in sample] 
+            solution_binary = [node for node in sample]
+            print(f"Solution: {solution_binary} Energy: {record.energy}")
             solution = TSP_utilities.binary_state_to_points_order(solution_binary)
             cost = self.calculateCost(solution)
             # print(solution, cost, record.energy)
@@ -369,22 +366,22 @@ runTime = []
 # times = [None,10,20,30,40]
 # times = [20,30,40]
 # times = [None,10]
-# times = [None]
-times = [40]
-suffixes = ["","_2","_3","_4","_5","_6","_7"]
+times = [None]
+# times = [40]
+# suffixes = ["","_2","_3","_4","_5","_6","_7"]
 # suffixes = ["_2","_3","_4","_5","_6","_7"]
 # suffixes = ["_4","_5"]
-# suffixes = [""]
+suffixes = [""]
 # suffixes = ["_7"]
 # problemName = "test2"
 
-problemName = "fri26"
-bestAnswer = 937
+# problemName = "fri26"
+# bestAnswer = 937
 
-# problemName = "gr17"
-# bestAnswer = 2085
+problemName = "gr17"
+bestAnswer = 2085
 
-solverName = "bqm"
+solverName = "bqmExample"
 # token = "DEV-7a1b7a0b8bc7b53815f4688371ab4489f88c8ca3"
 # token = "DEV-6d63d718aeccc25533994a5b7eb26fb16d73246d"
 # token = "DEV-acf6775961b37ef9d16fb8dba3164d4f9cccaa3f"
@@ -393,7 +390,7 @@ token = "DEV-ae1b69225d1c7309a2553ba26a9af8d80732722c"
 for time_limit in times:
     for extraSuffix in suffixes:
         print(time_limit,extraSuffix)
-        solver = DWaveTSPSolver(distance_matrix_fri26,time_limit=time_limit,bestAnswer=bestAnswer,sapi_token=token,solverName=solverName)
+        solver = DWaveTSPSolver(distance_matrix_gr17,time_limit=time_limit,bestAnswer=bestAnswer,sapi_token=token,solverName=solverName)
         solution, distribution = solver.solve_tspBQMsolver()
         solver.printSorted()
         bestAnswerErrors.append(solver.bestAnswerError)

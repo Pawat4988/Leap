@@ -36,6 +36,10 @@ import statistics
 from matplotlib import pyplot as plt
 
 dqm = DiscreteQuadraticModel()
+
+def trunc(values, decs=0):
+    return np.trunc(values*10**decs)/(10**decs)
+
 class DWaveTSPSolver(object):
     """
     Class for solving Travelling Salesman Problem using DWave.
@@ -44,11 +48,25 @@ class DWaveTSPSolver(object):
     def __init__(self, distance_matrix, sapi_token=None, url=None,bestAnswer=None,time_limit=None,extraSuffix='',problemName=None,solverName=None):
 
         max_distance = np.max(np.array(distance_matrix))
-        self.notScaledDistance_matrix = distance_matrix
         scaled_distance_matrix = distance_matrix / max_distance
+        # print(max_distance)
+        # scaled_distance_matrix = trunc(scaled_distance_matrix, decs=3)
+        # print(scaled_distance_matrix)
+        # # np.savetxt("test.out",scaled_distance_matrix,delimiter=",")
+        # file = open("fri26.txt", "w+")
+        # # Saving the array in a text file
+        # content = str(scaled_distance_matrix)
+        # file.write(content)
+        # file.close()
+        # exit()
         self.distance_matrix = scaled_distance_matrix
+        self.notScaledDistance_matrix = distance_matrix
+        # scaled_distance_matrix = distance_matrix / np.int32(10)
+        # scaled_distance_matrix = distance_matrix
         self.constraint_constant = 400
         self.cost_constant = 10
+        # self.constraint_constant = 1_000
+        # self.cost_constant = 0.01
         self.chainstrength = 800
         self.numruns = 1000
         self.qubo_dict = {}
@@ -79,12 +97,9 @@ class DWaveTSPSolver(object):
                 for j in range(n):
                     if i == j:
                         continue
-                    # for case in range(2):
                     qubit_a = t * n + i
                     qubit_b = (t + 1)%n * n + j
                     if qubit_a!=qubit_b:
-                        # self.qubo_dict[(qubit_a, qubit_b)] = self.cost_constant * self.distance_matrix[i][j]
-
                         gamma2 = 1
                         quadratic = self.cost_constant * self.distance_matrix[i][j]
                         dqm.set_quadratic_case(qubit_a,1,qubit_b,1,dqm.get_quadratic_case(qubit_a,1,qubit_b,1)+quadratic*gamma2)
@@ -94,15 +109,12 @@ class DWaveTSPSolver(object):
         n = len(self.distance_matrix)
         for t in range(n):
             for i in range(n):
-                # for case in range(2):
                 qubit_a = t * n + i
                 linear = -self.constraint_constant
                 gamma1 = 1
                 dqm.set_linear_case(qubit_a,1,dqm.get_linear_case(qubit_a,1)+gamma1*linear)
                 for j in range(n):
-                    # for case in range(2):
                     qubit_b = t * n + j
-                    # if i!=j:
                     if qubit_a!=qubit_b:
                         gamma2 = 1
                         quadratic = 2 * self.constraint_constant
@@ -173,10 +185,11 @@ class DWaveTSPSolver(object):
         # n = len(self.distance_matrix)
         distribution = {}
         min_energy = response.record[0].energy
-
+        print("----------Raw solution----------")
         for record in response.record:
             sample = record[0]
-            solution_binary = [node for node in sample] 
+            solution_binary = [node for node in sample]
+            print(f"Solution: {solution_binary} Energy: {record.energy}")
             solution = TSP_utilities.binary_state_to_points_order(solution_binary)
             cost = self.calculateCost(solution)
             # print(solution, cost, record.energy)
@@ -339,15 +352,15 @@ distance_matrix_4x4 = [ [0,4,1,3],
 bestAnswerErrors = []
 # times = [5.595,10,20,30,40]
 # times = [20,30,40]
-times = [40]
-# times = [None]
+times = [None]
 # times = [None,10]
 # suffixes = ["","_2","_3"]
 # suffixes = ["_4","_5","_6","_7"]
 # suffixes = ["","_2","_3","_4","_5","_6","_7"]
 # suffixes = ["_5","_6","_7"]
 # suffixes = ["_6","_7"]
-suffixes = ["_7"]
+# suffixes = ["_7"]
+suffixes = [""]
 
 # problemName = "fri26"
 # bestAnswer = 937
@@ -355,7 +368,7 @@ suffixes = ["_7"]
 problemName = "gr17"
 bestAnswer = 2085
 
-solverName = "dqm2"
+solverName = "dqmExample"
 # token = "DEV-7a1b7a0b8bc7b53815f4688371ab4489f88c8ca3"
 # token = "DEV-6d63d718aeccc25533994a5b7eb26fb16d73246d"
 # token = "DEV-acf6775961b37ef9d16fb8dba3164d4f9cccaa3f"

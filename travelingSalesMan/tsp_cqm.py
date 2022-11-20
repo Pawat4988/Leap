@@ -1,8 +1,10 @@
 from dwave.system.samplers import DWaveSampler           # Library to interact with the QPU
 from dwave.system.composites import EmbeddingComposite   # Library to embed our problem onto the QPU physical graph
 from dwave.system import LeapHybridBQMSampler, LeapHybridCQMSampler, LeapHybridDQMSampler
-from dimod import ConstrainedQuadraticModel, Integer
+
+from dimod import ConstrainedQuadraticModel
 from dimod.binary import BinaryQuadraticModel
+
 import itertools
 import scipy.optimize
 import TSP_utilities
@@ -46,9 +48,12 @@ class DWaveTSPSolver(object):
         max_distance = np.max(np.array(distance_matrix))
         self.notScaledDistance_matrix = distance_matrix
         scaled_distance_matrix = distance_matrix / max_distance
+        # scaled_distance_matrix = distance_matrix / np.int32(10)
         self.distance_matrix = scaled_distance_matrix
         self.constraint_constant = 400
         self.cost_constant = 10
+        # self.constraint_constant = 1_000_000
+        # self.cost_constant = 0.01
         self.chainstrength = 800
         self.numruns = 1000
         self.qubo_dict = {}
@@ -122,6 +127,7 @@ class DWaveTSPSolver(object):
         return self.solution, self.distribution
 
     def solve_tspCQMsolver(self):
+
         cqm = ConstrainedQuadraticModel.from_bqm(BinaryQuadraticModel.from_qubo(self.qubo_dict))
 
         sampler = LeapHybridCQMSampler(token=self.sapi_token)
@@ -159,10 +165,11 @@ class DWaveTSPSolver(object):
         # n = len(self.distance_matrix)
         distribution = {}
         min_energy = response.record[0].energy
-
+        print("----------Raw solution----------")
         for record in response.record:
             sample = record[0]
-            solution_binary = [node for node in sample] 
+            solution_binary = [node for node in sample]
+            print(f"Solution: {solution_binary} Energy: {record.energy}")
             solution = TSP_utilities.binary_state_to_points_order(solution_binary)
             cost = self.calculateCost(solution)
             # print(solution, cost, record.energy)
@@ -331,13 +338,13 @@ distance_matrix_gr17 = [
 bestAnswerErrors = []
 # times = [5,10,20,30,40]
 # times = [10,20,30,40]
-times = [None,10]
-# times = [None]
-# times = [None]
+# times = [10]
+times = [None]
 # suffixes = ["","_2","_3"]
+suffixes = [""]
 # suffixes = ["_4","_5"]
 # suffixes = ["","_2","_3","_4","_5"]
-suffixes = ["","_2","_3","_4","_5","_6","_7"]
+# suffixes = ["","_2","_3","_4","_5","_6","_7"]
 # suffixes = ["_5","_6","_7"]
 
 # problemName = "fri26"
@@ -346,7 +353,7 @@ suffixes = ["","_2","_3","_4","_5","_6","_7"]
 problemName = "gr17"
 bestAnswer = 2085
 
-solverName = "cqm2"
+solverName = "cqmExample"
 # token = "DEV-7a1b7a0b8bc7b53815f4688371ab4489f88c8ca3"
 # token = "DEV-6d63d718aeccc25533994a5b7eb26fb16d73246d"
 # token = "DEV-acf6775961b37ef9d16fb8dba3164d4f9cccaa3f"

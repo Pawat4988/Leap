@@ -22,10 +22,12 @@ times = [None,10,20,30,40]
 # times = [None,10]
 suffixes = ["","_2","_3","_4","_5","_6","_7"]
 
-problemName = "gr17"
-# problemName = "fri26"
+# problemName = "gr17"
+problemName = "fri26"
 # solverName = "cqm2"
 solverName = "bqm"
+# solverName = "cqm"
+# solverName = "dqm"
 
 for time_limit in times:
     for extraSuffix in suffixes:
@@ -40,7 +42,9 @@ for time_limit in times:
 x = np.array([5,5,5,5,5,5,5,10,10,10,10,10,10,10,20,20,20,20,20,20,20,30,30,30,30,30,30,30,40,40,40,40,40,40,40])
 y = np.array(bestAnswerErrors)
 plt.plot(x, y,"ro")
-plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}Plot2.png')
+plt.title(f'{solverName}_{problemName}Plot')
+
+plt.savefig(f'travelingSalesMan/finalPlot/{solverName}_{problemName}Plot.png')
 plt.show()
 plt.clf()
 
@@ -53,5 +57,6 @@ for i in range(5):
 
 y = np.array(mean)
 plt.plot(x, y,"ro")
-plt.savefig(f'travelingSalesMan/graph/{solverName}_{problemName}MeanPlot2.png')
+plt.title(f'{solverName}_{problemName}MeanPlot')
+plt.savefig(f'travelingSalesMan/finalPlot/{solverName}_{problemName}MeanPlot.png')
 plt.show()
